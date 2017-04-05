@@ -4,8 +4,6 @@
  */
 namespace Soli\Di;
 
-use Closure;
-
 /**
  * 服务原型
  *
