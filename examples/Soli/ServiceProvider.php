@@ -2,8 +2,18 @@
 
 namespace Soli;
 
+/**
+ * @property array config
+ */
 abstract class ServiceProvider extends Component
 {
+    /**
+     * Identifier of the entry to look for.
+     *
+     * @var string
+     */
+    protected $id = null;
+
     /**
      * Indicates if loading of the provider is deferred.
      *
@@ -19,45 +29,22 @@ abstract class ServiceProvider extends Component
     abstract public function register();
 
     /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return [];
-    }
-
-    /**
      * 绑定服务到容器
      */
     public function bind()
     {
-        $realProvide = current($this->provides());
-        if (empty($realProvide)) {
-            return;
+        if (is_null($this->id)) {
+            throw new \InvalidArgumentException('The "id" property must be set.');
         }
 
         $service = $this;
 
-        foreach ($this->provides() as $provide) {
-            if ($provide == $realProvide) {
-                $this->di->set(
-                    $provide,
-                    function () use ($service) {
-                        return $service->register();
-                    },
-                    $this->defer
-                );
-            } else {
-                $this->di->set(
-                    $provide,
-                    function () use ($realProvide) {
-                        return $this->get($realProvide);
-                    },
-                    $this->defer
-                );
-            }
-        }
+        $this->di->set(
+            $this->id,
+            function () use ($service) {
+                return $service->register();
+            },
+            $this->defer
+        );
     }
 }

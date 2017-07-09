@@ -10,12 +10,26 @@ $app->registerBaseServiceProviders();
 
 $app->registerConfiguredProviders();
 
-$service = $app->test_service;
+// 使用访问对象属性的方式，访问容器服务，同 $di->getShared() 方法
+$service = $app->testService;
 var_dump($service);
 
-// 对于不能用作属性名的服务名称，只能使用 get/getShared 方法获取
-$service = $app->di->get('test.service');
+// 使用访问对象属性的方式，访问容器服务，同 $di->getShared() 方法
+$service = $app->di->testService;
 var_dump($service);
 
-//$service = $app->di->get('redis.connection');
+// 数组访问方式获取 testService 服务，同 $di->getShared() 方法
+$service = $app->di['testService'];
+var_dump($service);
+
+// 使用 get 方法获取 testService 服务，
+// 由 TestServiceProvider 对象的 defer 属性决定是否每次都执行 register() 方法
+$service = $app->di->get('testService');
+var_dump($service);
+
+// TestServiceProvider 服务的共享实例，只执行一次 register() 方法
+$service = $app->di->getShared('testService');
+var_dump($service);
+
+//$service = $app->di->get('redis');
 //var_dump($service);

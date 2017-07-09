@@ -6,18 +6,10 @@ use Soli\ServiceProvider;
 
 class RedisServiceProvider extends ServiceProvider
 {
-    /**
-     * Indicates if loading of the provider is deferred.
-     *
-     * @var bool
-     */
+    protected $id = 'redis';
+
     protected $defer = true;
 
-    /**
-     * Register the service provider.
-     *
-     * @return \Redis
-     */
     public function register()
     {
         // 获取 redis 配置信息
@@ -27,19 +19,13 @@ class RedisServiceProvider extends ServiceProvider
 
         $success = $client->connect($redisConf['host'], $redisConf['port']);
 
+        if (!$success) {
+            throw new \Exception("Can't connect to Redis.");
+        }
+
         $client->setOption(\Redis::OPT_PREFIX, $redisConf['prefix']);
         $client->select($redisConf['database']);
 
         return $client;
-    }
-
-    /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
-    public function provides()
-    {
-        return ['redis', 'redis.connection'];
     }
 }
