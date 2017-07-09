@@ -58,49 +58,49 @@ class Container implements ContainerInterface, \ArrayAccess
     /**
      * 注册一个服务到容器
      *
-     * @param string $name
+     * @param string $id 服务标识
      * @param mixed $definition 服务定义, 类名|对象(实例化后的对象或Closure)|数组
      * @param bool $shared 为 true 则注册单例服务
      * @return Service
      */
-    public function set($name, $definition, $shared = false)
+    public function set($id, $definition, $shared = false)
     {
-        $service = new Service($name, $definition, $shared);
-        static::$services[$name] = $service;
+        $service = new Service($id, $definition, $shared);
+        static::$services[$id] = $service;
         return $service;
     }
 
     /**
      * 注册单例服务
      *
-     * @param string $name
+     * @param string $id 服务标识
      * @param mixed $definition 服务定义
      * @return Service
      */
-    public function setShared($name, $definition)
+    public function setShared($id, $definition)
     {
-        return $this->set($name, $definition, true);
+        return $this->set($id, $definition, true);
     }
 
     /**
      * 从容器中获取一个服务, 解析服务定义
      * 如果不存在则自动注册
      *
-     * @param string $name 服务名称
+     * @param string $id 服务标识|类名
      * @param array $parameters 参数
      * @return mixed
      * @throws \Exception
      */
-    public function get($name, array $parameters = null)
+    public function get($id, array $parameters = null)
     {
-        if (isset(static::$services[$name])) {
+        if (isset(static::$services[$id])) {
             /** @var Service $service 服务实例 */
-            $service = static::$services[$name];
-        } elseif (class_exists($name)) {
-            // 通过类名自动注册并获取服务实例
-            $service = $this->set($name, $name);
+            $service = static::$services[$id];
+        } elseif (class_exists($id)) {
+            // 自动将类名注册为服务
+            $service = $this->set($id, $id, true);
         } else {
-            throw new \Exception("Service '$name' wasn't found in the dependency injection container");
+            throw new \Exception("Service '$id' wasn't found in the dependency injection container");
         }
 
         // 解析服务, 返回实例
@@ -118,22 +118,22 @@ class Container implements ContainerInterface, \ArrayAccess
     /**
      * 当一个服务未被注册为单例服务，但是又想获取 shared 实例时
      *
-     * @param string $name 服务名称
+     * @param string $id 服务标识
      * @param array $parameters 参数
      * @return mixed
      */
-    public function getShared($name, array $parameters = null)
+    public function getShared($id, array $parameters = null)
     {
         // 检查是否已解析
-        if (isset(static::$sharedInstances[$name])) {
-            return static::$sharedInstances[$name];
+        if (isset(static::$sharedInstances[$id])) {
+            return static::$sharedInstances[$id];
         }
 
         // 解析服务实例
-        $service = $this->get($name, $parameters);
+        $service = $this->get($id, $parameters);
 
         // 保存到 shared 实例列表
-        static::$sharedInstances[$name] = $service;
+        static::$sharedInstances[$id] = $service;
 
         return $service;
     }
@@ -141,24 +141,24 @@ class Container implements ContainerInterface, \ArrayAccess
     /**
      * 查询容器中是否存在某个服务
      *
-     * @param string $name 服务名称
+     * @param string $id 服务标识
      * @return bool
      */
-    public function has($name)
+    public function has($id)
     {
-        return isset(static::$services[$name]);
+        return isset(static::$services[$id]);
     }
 
     /**
      * 从服务容器中删除一个服务
      *
-     * @param string $name 服务名称
+     * @param string $id 服务标识
      * @return void
      */
-    public function remove($name)
+    public function remove($id)
     {
-        unset(static::$services[$name]);
-        unset(static::$sharedInstances[$name]);
+        unset(static::$services[$id]);
+        unset(static::$sharedInstances[$id]);
     }
 
     /**
@@ -173,24 +173,24 @@ class Container implements ContainerInterface, \ArrayAccess
 
     // 实现 \ArrayAccess 方法
 
-    public function offsetExists($name)
+    public function offsetExists($id)
     {
-        return $this->has($name);
+        return $this->has($id);
     }
 
-    public function offsetGet($name)
+    public function offsetGet($id)
     {
-        return $this->getShared($name);
+        return $this->getShared($id);
     }
 
-    public function offsetSet($name, $definition)
+    public function offsetSet($id, $definition)
     {
-        return $this->set($name, $definition, true);
+        $this->set($id, $definition, true);
     }
 
-    public function offsetUnset($name)
+    public function offsetUnset($id)
     {
-        return false;
+        $this->remove($id);
     }
 
     /**

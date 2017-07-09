@@ -12,11 +12,11 @@ namespace Soli\Di;
 class Service
 {
     /**
-     * 服务名称
+     * 服务标识
      *
-     * @var string $name
+     * @var string $id
      */
-    protected $name;
+    protected $id;
 
     /**
      * 服务的定义, 类名|对象(实例化后对象或Closure)|数组
@@ -32,13 +32,13 @@ class Service
     /**
      * Service constructor.
      *
-     * @param string $name 服务名称
+     * @param string $id 服务标识
      * @param object|string|array $definition
      * @param bool $shared
      */
-    public function __construct($name, $definition, $shared = false)
+    public function __construct($id, $definition, $shared = false)
     {
-        $this->name = $name;
+        $this->id = $id;
         $this->definition = $definition;
         $this->shared = $shared;
     }
@@ -91,7 +91,7 @@ class Service
             // 数组
             $instance = $definition;
         } else {
-            throw new \Exception("Service '{$this->name}' cannot be resolved");
+            throw new \Exception("Service '{$this->id}' cannot be resolved");
         }
 
         // 如果是 shared, 保存实例
