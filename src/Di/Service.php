@@ -89,8 +89,8 @@ class Service implements ServiceInterface
         switch ($type) {
             case 'object':
                 if ($definition instanceof Closure) {
-                    // 绑定匿名函数到当前的依赖注入容器对象实例上
-                    // 以便匿名函数内可以可以通过
+                    // 绑定匿名函数到当前的容器对象实例上
+                    // 以便在匿名函数内通过 $this 访问容器中的其他服务
                     if (is_object($di)) {
                         $definition = Closure::bind($definition, $di);
                     }
