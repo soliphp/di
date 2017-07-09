@@ -9,7 +9,7 @@ class ServiceTest extends TestCase
 {
     public function testNonShared()
     {
-        $service = new Service('some_name', function () {
+        $service = new Service('someName', function () {
             return new \stdClass;
         }, false);
 
@@ -21,7 +21,7 @@ class ServiceTest extends TestCase
 
     public function testShared()
     {
-        $service = new Service('some_name', function () {
+        $service = new Service('someName', function () {
             return new \stdClass;
         }, true);
 
@@ -33,7 +33,7 @@ class ServiceTest extends TestCase
 
     public function testResolveObjectInstance()
     {
-        $service = new Service('some_name', new \stdClass);
+        $service = new Service('someName', new \stdClass);
 
         $a = $service->resolve();
 
@@ -43,7 +43,7 @@ class ServiceTest extends TestCase
     public function testResolveArray()
     {
         $arr = [1, 2];
-        $service = new Service('some_name', $arr);
+        $service = new Service('someName', $arr);
 
         $a = $service->resolve();
 
@@ -52,7 +52,7 @@ class ServiceTest extends TestCase
 
     public function testResolveClassWithParameters()
     {
-        $service = new Service('some_name', 'ReflectionFunction');
+        $service = new Service('someName', 'ReflectionFunction');
 
         $parameters = ['substr'];
         $a = $service->resolve($parameters);
@@ -62,7 +62,7 @@ class ServiceTest extends TestCase
 
     public function testResolveClosureWithParameters()
     {
-        $service = new Service('some_name', function ($a, $b) {
+        $service = new Service('someName', function ($a, $b) {
             return $a + $b;
         });
 
@@ -77,7 +77,7 @@ class ServiceTest extends TestCase
      */
     public function testCannotResolved()
     {
-        $service = new Service('not_exists_class', 'not_exists_class_name');
+        $service = new Service('notExistsClass', 'not_exists_class_name');
 
         $service->resolve();
     }
