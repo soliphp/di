@@ -5,6 +5,7 @@
 namespace Soli;
 
 use Soli\Di\Container;
+use Soli\Di\ContainerInterface;
 use Soli\Di\ContainerAwareInterface;
 
 /**
@@ -12,22 +13,22 @@ use Soli\Di\ContainerAwareInterface;
  *
  * 通过 $this->{serviceName} 访问属性的方式访问所有注册到容器中的服务
  *
- * @property \Soli\Di\Container $di
+ * @property \Soli\Di\ContainerInterface $di
  */
 class Component implements ContainerAwareInterface
 {
     /**
-     * @var \Soli\Di\Container
+     * @var \Soli\Di\ContainerInterface
      */
     protected $container;
 
-    public function setDi(Container $di)
+    public function setDi(ContainerInterface $di)
     {
         $this->container = $di;
     }
 
     /**
-     * @return \Soli\Di\Container
+     * @return \Soli\Di\ContainerInterface
      */
     public function getDi()
     {
@@ -41,7 +42,7 @@ class Component implements ContainerAwareInterface
      * 获取容器本身，或者获取容器中的某个服务
      *
      * @param string $name
-     * @return \Soli\Di\Container|mixed
+     * @return \Soli\Di\ContainerInterface|mixed
      */
     public function __get($name)
     {

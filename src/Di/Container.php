@@ -4,8 +4,6 @@
  */
 namespace Soli\Di;
 
-use Psr\Container\ContainerInterface;
-
 /**
  * 依赖注入容器
  *
@@ -16,28 +14,28 @@ use Psr\Container\ContainerInterface;
 class Container implements ContainerInterface, \ArrayAccess
 {
     /**
-     * Container 实例
+     * 存储容器对象实例
      *
-     * @var \Soli\Di\Container
+     * @var \Soli\Di\ContainerInterface
      */
     public static $instance;
 
     /**
-     * services 服务容器
+     * 存储所有注册的服务
      *
-     * @var array
+     * @var \Soli\Di\ServiceInterface[]
      */
     protected static $services = [];
 
     /**
-     * shared 服务实例
+     * 存储 getShared 方法返回的服务实例（服务定义的执行结果）
      *
      * @var array
      */
     protected static $sharedInstances = [];
 
     /**
-     * 初始化 Container 默认实例
+     * 初始化容器默认实例
      */
     public function __construct()
     {
@@ -48,7 +46,9 @@ class Container implements ContainerInterface, \ArrayAccess
     }
 
     /**
-     * 获取 Container 实例
+     * 获取容器对象实例
+     *
+     * @return \Soli\Di\ContainerInterface
      */
     public static function instance()
     {
@@ -61,7 +61,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param string $id 服务标识
      * @param mixed $definition 服务定义, 类名|对象实例或Closure
      * @param bool $shared 为 true 则注册单例服务
-     * @return Service
+     * @return \Soli\Di\ServiceInterface
      */
     public function set($id, $definition, $shared = false)
     {
@@ -75,7 +75,7 @@ class Container implements ContainerInterface, \ArrayAccess
      *
      * @param string $id 服务标识
      * @param mixed $definition 服务定义
-     * @return Service
+     * @return \Soli\Di\ServiceInterface
      */
     public function setShared($id, $definition)
     {
@@ -95,7 +95,7 @@ class Container implements ContainerInterface, \ArrayAccess
     public function get($id, array $parameters = null)
     {
         if (isset(static::$services[$id])) {
-            /** @var Service $service 服务实例 */
+            /** @var \Soli\Di\ServiceInterface $service 服务实例 */
             $service = static::$services[$id];
         } elseif (class_exists($id)) {
             // 自动将类名注册为服务
@@ -167,7 +167,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * 获取容器中的某个 Service 对象实例
      *
      * @param string $id 服务标识
-     * @return Service
+     * @return \Soli\Di\ServiceInterface
      * @throws \InvalidArgumentException
      */
     public function getService($id)
@@ -182,7 +182,7 @@ class Container implements ContainerInterface, \ArrayAccess
     /**
      * 获取容器中的所有服务
      *
-     * @return array
+     * @return \Soli\Di\ServiceInterface[]
      */
     public function getServices()
     {

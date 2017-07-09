@@ -12,7 +12,7 @@ use ReflectionClass;
  *
  * 容器中对单个服务单元的定义
  */
-class Service
+class Service implements ServiceInterface
 {
     /**
      * 服务标识
@@ -70,11 +70,11 @@ class Service
      * 解析服务
      *
      * @param array $parameters 参数
-     * @param \Soli\Di\Container $di 容器对象实例
+     * @param \Soli\Di\ContainerInterface $di 容器对象实例
      * @return mixed
      * @throws \DomainException
      */
-    public function resolve(array $parameters = null, Container $di = null)
+    public function resolve(array $parameters = null, ContainerInterface $di = null)
     {
         // 为 shared 服务且解析过则直接返回实例
         if ($this->shared && $this->sharedInstance !== null) {

@@ -4,11 +4,13 @@ namespace Soli\Tests\Di;
 
 use Soli\Tests\TestCase;
 use Soli\Di\Container;
+use Soli\Di\ContainerInterface;
+use Soli\Di\ContainerAwareInterface;
 
 class ContainerTest extends TestCase
 {
     /**
-     * @var \Soli\Di\Container
+     * @var \Soli\Di\ContainerInterface
      */
     protected $di;
 
@@ -21,6 +23,11 @@ class ContainerTest extends TestCase
     {
         $this->di = new Container();
         $this->myComponent = __NAMESPACE__ . '\MyComponent';
+    }
+
+    public function testContainerInstance()
+    {
+        $this->assertInstanceOf('\Soli\Di\ContainerInterface', Container::instance());
     }
 
     public function testClosureInjection()
@@ -140,17 +147,24 @@ class ContainerTest extends TestCase
     {
         $di = $this->di;
 
+        // offsetSet
         $di['someService1'] = new \stdClass;
         $di->setShared('someService2', new \ArrayObject);
 
         $service1 = $di->get('someService1');
+        // offsetGet
         $service2 = $di['someService2'];
+
+        // offsetExists
+        if (isset($di['someService2'])) {
+            // offsetUnset
+            unset($di['someService2']);
+        }
 
         $this->assertInstanceOf('\stdClass', $service1);
         $this->assertInstanceOf('\ArrayObject', $service2);
     }
 
-    // Container::__get()
     public function testMagicGet()
     {
         $di = $this->di;
@@ -172,7 +186,15 @@ class ContainerTest extends TestCase
         $di->set('someService', new \stdClass);
         $service = $di->getService('someService');
 
-        $this->assertInstanceOf('\Soli\Di\Service', $service);
+        $this->assertInstanceOf('\Soli\Di\ServiceInterface', $service);
+    }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testCantGetServiceById()
+    {
+        $service = $this->di->getService('notExistsService');
     }
 
     public function testGetServices()
@@ -184,7 +206,25 @@ class ContainerTest extends TestCase
 
         $service = array_shift($services);
 
-        $this->assertInstanceOf('\Soli\Di\Service', $service);
+        $this->assertInstanceOf('\Soli\Di\ServiceInterface', $service);
+    }
+
+    public function testGetClassName()
+    {
+        $service = $this->di->get($this->myComponent);
+
+        $this->assertInstanceOf($this->myComponent, $service);
+    }
+
+    public function testContainerAware()
+    {
+        // 清除上面测试用例中已经设置的 "someService" 服务，的共享实例
+        $this->di->remove('someService');
+
+        $this->di->set('someService', $this->myComponent);
+        $service = $this->di->get('someService');
+
+        $this->assertInstanceOf('\Soli\Di\ContainerInterface', $service->getDi());
     }
 
     public function testClosureInjectionUseThis()
@@ -194,7 +234,7 @@ class ContainerTest extends TestCase
         });
         $service = $this->di->get('closure');
 
-        $this->assertInstanceOf('\Soli\Di\Container', $service);
+        $this->assertInstanceOf('\Soli\Di\ContainerInterface', $service);
     }
 
     public function testClosureInjectionUseThisCallOtherService()
@@ -225,9 +265,27 @@ class ContainerTest extends TestCase
     }
 }
 
-class MyComponent
+class MyComponent implements ContainerAwareInterface
 {
     protected $id;
+
+    /**
+     * @var \Soli\Di\ContainerInterface
+     */
+    protected $container;
+
+    public function setDi(ContainerInterface $di)
+    {
+        $this->container = $di;
+    }
+
+    /**
+     * @return \Soli\Di\ContainerInterface
+     */
+    public function getDi()
+    {
+        return $this->container;
+    }
 
     public function __construct($id = 0)
     {
