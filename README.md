@@ -1,7 +1,7 @@
 Soli Dependency Injection Container
 ------------------
 
-当前项目参考 [Phalcon 框架的事件管理器]实现。
+当前项目参考 [Phalcon 框架的依赖注入与服务定位器]实现。
 
 依赖注入容器的目的为了降低代码的耦合度，提高应用的可维护性。
 
@@ -15,54 +15,51 @@ Soli Dependency Injection Container
 
 ## 使用
 
-容器中常用的四个函数，注册服务时的 `set/setShared` 方法和获取服务时的 `get/getShared` 方法。
+容器中常用的四个方法，注册服务时的 `set/setShared` 方法和获取服务时的 `get/getShared` 方法。
 
-服务的注册阶段，仅仅是存储服务定义的格式，并不会调用服务的定义，解析出服务的实例；
-而在获取服务（即使用服务）时，对服务的定义进行解析，拿到服务实例。
+服务的注册阶段，仅仅是存储服务定义的格式，并不会调用服务的定义；
+而在获取服务（即使用服务）时，对服务定义进行调用，得到服务定义的执行结果。
 这样便实现了对服务的延迟加载，避免实例化请求中未用到的服务。
 
 ### 注册服务
 
-`服务提供者的格式`，只要是 [call_user_func_array] 允许的格式即可，
-也可以是实例化类。
+`服务提供者的格式`，可以是 `匿名函数、对象实例或类名`。
 
-#### 使用匿名函数注册服务：
+#### 使用匿名函数注册服务
 
     use Soli\Di\Container;
 
     $di = new Container();
 
     // 注册服务，存储服务的定义
-    $di->set('some_service', function () {
+    $di->set('someComponent', function () {
         new SomeComponent;
     });
 
     // 注册服务，存储服务的定义
-    $di->set('some_service', function () use ($di) {
+    $di->set('someService', function () use ($di) {
         var_dump($di->getServices());
     });
 
 将在获取服务时，返回匿名函数的执行结果。
 
+
+#### 使用对象实例注册服务
+
+    $di->set('someComponent', new \SomeNamespace\SomeComponent());
+
+将在获取服务时，返回对应的对象实例。
+
 #### 使用类名注册服务
 
-    $di->set('some_service', '\SomeNamespace\SomeComponent');
+    $di->set('someComponent', '\SomeNamespace\SomeComponent');
 
 将在获取服务时，返回对应类名的实例化对象。
 
-#### 使用类函数注册服务
-
-    $di->set('some_service', [new SomeComponent, 'provider']);
-
-将在获取服务时，返回类函数的执行结果。
-
-__更多服务注册的方式，您可以参考 [call_user_func_array] 允许的格式，整理自己的服务提供方式。__
-
-
 #### 获取服务
 
-    // 获取服务，解析服务定义，并返回服务实例
-    $service = $di->get('some_service');
+    // 获取服务，调用服务定义，返回服务定义的执行结果
+    $service = $di->get('someService');
 
 ### 共享（单例）服务
 
@@ -70,19 +67,15 @@ __更多服务注册的方式，您可以参考 [call_user_func_array] 允许的
 
 #### 注册共享服务
 
-当我们使用 `$di->set()` 方法时，可以传入第三个参数为 true，将服务注册为共享服务：
+与 set 方法对应，我们可以使用 setShared 方法，将服务注册为共享服务：
 
-    $di->set('some_service', <Some definition>, true);
-
-别名为 setShared，以上代码等同于：
-
-    $di->setShared('some_service', <Some definition>);
+    $di->setShared('someService', <Some definition>);
 
 #### 获取共享服务
 
 当一个服务注册为非共享服务时，我们依然可以通过 getShared 方法获取共享实例：
 
-    $service = $di->getShared('some_service');
+    $service = $di->getShared('someService');
 
 对于类名无论是否已注册为服务，我们都可以直接通过容器获取到它的共享实例：
 
@@ -115,8 +108,7 @@ __更多服务注册的方式，您可以参考 [call_user_func_array] 允许的
 MIT Public License
 
 
-[Phalcon 框架的事件管理器]: https://docs.phalconphp.com/zh/latest/reference/events.html
-[call_user_func_array]: http://cn2.php.net/call_user_func_array
-[API 参考]: http://soli-api.aboutc.net/Soli/Di/Container.html
+[Phalcon 框架的依赖注入与服务定位器]: https://docs.phalconphp.com/en/latest/di
+[API 参考]: http://soli-api.aboutc.net/Soli/Di.html
 [examples]: examples
 [Laravel 框架的服务提供者]: https://laravel.com/docs/5.4/providers

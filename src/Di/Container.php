@@ -59,7 +59,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * 注册一个服务到容器
      *
      * @param string $id 服务标识
-     * @param mixed $definition 服务定义, 类名|对象(实例化后的对象或Closure)|数组
+     * @param mixed $definition 服务定义, 类名|对象实例或Closure
      * @param bool $shared 为 true 则注册单例服务
      * @return Service
      */

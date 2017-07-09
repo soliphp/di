@@ -73,6 +73,11 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf($this->myComponent, $service);
     }
 
+    /**
+     * 不支持注册数组
+     *
+     * @expectedException \Exception
+     */
     public function testArrayInjection()
     {
         $array = [

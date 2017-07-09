@@ -4,6 +4,9 @@
  */
 namespace Soli\Di;
 
+use Closure;
+use ReflectionClass;
+
 /**
  * 服务原型
  *
@@ -19,32 +22,44 @@ class Service
     protected $id;
 
     /**
-     * 服务的定义, 类名|对象(实例化后对象或Closure)|数组
+     * 服务定义, 类名|对象实例或Closure
      *
      * @var object|string|array
      */
     protected $definition;
 
+    /**
+     * 是否为共享服务
+     *
+     * @var bool
+     */
     protected $shared = false;
 
+    /**
+     * 存储共享服务实例（即服务定义的执行结果）
+     *
+     * @var mixed
+     */
     protected $sharedInstance;
 
     /**
      * Service constructor.
      *
      * @param string $id 服务标识
-     * @param object|string|array $definition
+     * @param object|string $definition
      * @param bool $shared
      */
     public function __construct($id, $definition, $shared = false)
     {
         $this->id = $id;
         $this->definition = $definition;
-        $this->shared = $shared;
+        $this->shared = (bool)$shared;
     }
 
     /**
      * 检查服务是否为共享的
+     *
+     * @return bool
      */
     public function isShared()
     {
@@ -54,8 +69,8 @@ class Service
     /**
      * 解析服务
      *
-     * @param array $parameters
-     * @return object|array|null
+     * @param array $parameters 参数
+     * @return mixed
      * @throws \Exception
      */
     public function resolve(array $parameters = null)
@@ -68,35 +83,69 @@ class Service
         // 创建实例
         $instance = null;
         $definition = $this->definition;
+        $type = gettype($definition);
 
-        if (is_callable($definition)) {
-            if (is_array($parameters)) {
-                $instance = call_user_func_array($definition, $parameters);
-            } else {
-                $instance = call_user_func_array($definition, []);
-            }
-        } elseif (is_object($definition)) {
-            // 实例化的类
-            $instance = $definition;
-        } elseif (is_string($definition) && class_exists($definition)) {
-            // 已存在的类名
-            $reflector = new \ReflectionClass($definition);
-
-            if (is_array($parameters) && count($parameters)) {
-                $instance = $reflector->newInstanceArgs($parameters);
-            } else {
-                $instance = $reflector->newInstance();
-            }
-        } elseif (is_array($definition)) {
-            // 数组
-            $instance = $definition;
-        } else {
-            throw new \Exception("Service '{$this->id}' cannot be resolved");
+        switch ($type) {
+            case 'object':
+                if ($definition instanceof Closure) {
+                    // Closure
+                    $instance = $this->createInstanceFromClosure($definition, $parameters);
+                } else {
+                    // 对象实例
+                    $instance = $definition;
+                }
+                break;
+            case 'string':
+                // 已存在的类名
+                $instance = $this->createInstanceFromClassName($definition, $parameters);
+                break;
+            default:
+                throw new \Exception("Service '{$this->id}' cannot be resolved");
         }
 
         // 如果是 shared, 保存实例
         if ($this->shared) {
             $this->sharedInstance = $instance;
+        }
+
+        return $instance;
+    }
+
+    /**
+     * @param Closure $closure
+     * @param array   $parameters
+     * @return mixed
+     */
+    protected function createInstanceFromClosure(Closure $closure, array $parameters = null)
+    {
+        // Closure
+        if (is_array($parameters) && count($parameters)) {
+            $instance = call_user_func_array($closure, $parameters);
+        } else {
+            $instance = call_user_func($closure);
+        }
+
+        return $instance;
+    }
+
+    /**
+     * @param string $className
+     * @param array  $parameters
+     * @return object
+     * @throws \Exception
+     */
+    protected function createInstanceFromClassName($className, array $parameters = null)
+    {
+        if (!class_exists($className)) {
+            throw new \Exception("Service '{$this->id}' cannot be resolved");
+        }
+
+        $reflector = new ReflectionClass($className);
+
+        if (is_array($parameters) && count($parameters)) {
+            $instance = $reflector->newInstanceArgs($parameters);
+        } else {
+            $instance = $reflector->newInstance();
         }
 
         return $instance;

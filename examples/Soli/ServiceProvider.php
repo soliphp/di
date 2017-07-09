@@ -38,11 +38,15 @@ abstract class ServiceProvider extends Component
             return;
         }
 
+        $service = $this;
+
         foreach ($this->provides() as $provide) {
             if ($provide == $realProvide) {
                 $this->di->set(
                     $provide,
-                    [$this, 'register'],
+                    function () use ($service) {
+                        return $service->register();
+                    },
                     $this->defer
                 );
             } else {

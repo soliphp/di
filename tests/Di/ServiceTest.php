@@ -40,6 +40,11 @@ class ServiceTest extends TestCase
         $this->assertInstanceOf('\stdClass', $a);
     }
 
+    /**
+     * 不支持注册数组
+     *
+     * @expectedException \Exception
+     */
     public function testResolveArray()
     {
         $arr = [1, 2];
@@ -70,6 +75,17 @@ class ServiceTest extends TestCase
         $sum = $service->resolve($parameters);
 
         $this->assertEquals(3, $sum);
+    }
+
+    public function testIsShared()
+    {
+        $service = new Service('someName', function () {
+            return new \stdClass;
+        }, false);
+
+        $shared = $service->isShared();
+
+        $this->assertFalse($shared);
     }
 
     /**
