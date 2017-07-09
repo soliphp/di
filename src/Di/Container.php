@@ -192,4 +192,19 @@ class Container implements ContainerInterface, \ArrayAccess
     {
         return false;
     }
+
+    /**
+     * 允许将服务标识作为属性名访问
+     *
+     *<code>
+     * $di->someService;
+     *</code>
+     *
+     * @param string $id 服务标识
+     * @return mixed
+     */
+    public function __get($id)
+    {
+        return $this->getShared($id);
+    }
 }

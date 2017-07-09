@@ -137,6 +137,22 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf('\stdClass', $s1);
         $this->assertInstanceOf('\ArrayObject', $s2);
     }
+
+    // Container::__get()
+    public function testMagicGet()
+    {
+        $di = $this->di;
+
+        $di['someService1'] = new \stdClass;
+        $di->setShared('someService2', new \ArrayObject);
+
+        $service1 = $di->someService1;
+        $service2 = $di->someService2;
+
+        $this->assertInstanceOf('\stdClass', $service1);
+        $this->assertInstanceOf('\ArrayObject', $service2);
+    }
+
 }
 
 class MyComponent
