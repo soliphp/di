@@ -33,16 +33,24 @@ Soli Dependency Injection Container
 
     // 注册服务，存储服务的定义
     $di->set('someComponent', function () {
-        new SomeComponent;
+        return new SomeComponent;
     });
 
+*使用 $this 访问容器中的其他服务*
+
+`当使用匿名函数注册服务时，函数体内可以使用 $this 表示当前的 $di 容器对象实例，
+直接访问容器中的其他服务，便于服务之间进行交互。`
+
     // 注册服务，存储服务的定义
-    $di->set('someService', function () use ($di) {
-        var_dump($di->getServices());
+    $di->set('someService', function () {
+        // 此处的 $tihs 即是当前的 $di 容器对象实例
+        var_dump($this->getServices());
+
+        // 通过 $this 直接访问容器中的其他服务
+        var_dump($this->someComponent);
     });
 
 将在获取服务时，返回匿名函数的执行结果。
-
 
 #### 使用对象实例注册服务
 

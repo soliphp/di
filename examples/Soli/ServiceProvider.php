@@ -53,7 +53,7 @@ abstract class ServiceProvider extends Component
                 $this->di->set(
                     $provide,
                     function () use ($realProvide) {
-                        return $this->di->get($realProvide);
+                        return $this->get($realProvide);
                     },
                     $this->defer
                 );

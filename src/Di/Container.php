@@ -83,8 +83,9 @@ class Container implements ContainerInterface, \ArrayAccess
     }
 
     /**
-     * 从容器中获取一个服务, 解析服务定义
-     * 如果不存在则自动注册
+     * 从容器中获取一个服务
+     *
+     * 当传入未注册为服务标识的类名时，自动将类名注册为服务，并返回类实例
      *
      * @param string $id 服务标识|类名
      * @param array $parameters 参数
@@ -103,9 +104,8 @@ class Container implements ContainerInterface, \ArrayAccess
             throw new \Exception("Service '$id' wasn't found in the dependency injection container");
         }
 
-        // 解析服务, 返回实例
-        // 如果一个服务注册时使用 shared, 会返回一个 shared 实例, 逻辑在解析方法中体现
-        $instance = $service->resolve($parameters);
+        // 解析服务, 返回服务定义的执行结果
+        $instance = $service->resolve($parameters, $this);
 
         // 当前服务实现了 ContainerAwareInterface 接口时，自动为其设置容器
         if ($instance instanceof ContainerAwareInterface) {
@@ -116,7 +116,9 @@ class Container implements ContainerInterface, \ArrayAccess
     }
 
     /**
-     * 当一个服务未被注册为单例服务，但是又想获取 shared 实例时
+     * 获取单例服务
+     *
+     * 当一个服务未被注册为单例服务，使用此方法也可以获取单例服务
      *
      * @param string $id 服务标识
      * @param array $parameters 参数

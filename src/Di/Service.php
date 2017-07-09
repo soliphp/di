@@ -70,10 +70,11 @@ class Service
      * 解析服务
      *
      * @param array $parameters 参数
+     * @param \Soli\Di\Container $di 容器对象实例
      * @return mixed
      * @throws \Exception
      */
-    public function resolve(array $parameters = null)
+    public function resolve(array $parameters = null, Container $di = null)
     {
         // 为 shared 服务且解析过则直接返回实例
         if ($this->shared && $this->sharedInstance !== null) {
@@ -88,6 +89,12 @@ class Service
         switch ($type) {
             case 'object':
                 if ($definition instanceof Closure) {
+                    // 绑定匿名函数到当前的依赖注入容器对象实例上
+                    // 以便匿名函数内可以可以通过
+                    if (is_object($di)) {
+                        $definition = Closure::bind($definition, $di);
+                    }
+
                     // Closure
                     $instance = $this->createInstanceFromClosure($definition, $parameters);
                 } else {

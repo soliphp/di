@@ -186,6 +186,35 @@ class ContainerTest extends TestCase
 
         $this->assertInstanceOf('\Soli\Di\Service', $service);
     }
+
+    public function testClosureInjectionUseThis()
+    {
+        $this->di->set('closure', function () {
+            return $this;
+        });
+        $service = $this->di->get('closure');
+
+        $this->assertInstanceOf('\Soli\Di\Container', $service);
+    }
+
+    public function testClosureInjectionUseThisCallOtherService()
+    {
+        $this->di->set('service1', function () {
+            return 'service1 returned';
+        });
+
+        $this->di->set('closure', function () {
+            return $this->get('service1');
+        });
+        $service = $this->di->get('closure');
+        $this->assertEquals('service1 returned', $service);
+
+        $this->di->set('closure', function () {
+            return $this->service1;
+        });
+        $service = $this->di->get('closure');
+        $this->assertEquals('service1 returned', $service);
+    }
 }
 
 class MyComponent
