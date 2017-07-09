@@ -160,6 +160,27 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf('\ArrayObject', $service2);
     }
 
+    public function testGetServiceById()
+    {
+        $di = $this->di;
+
+        $di->set('someService', new \stdClass);
+        $service = $di->getService('someService');
+
+        $this->assertInstanceOf('\Soli\Di\Service', $service);
+    }
+
+    public function testGetServices()
+    {
+        $di = $this->di;
+
+        $di->set('someService', new \stdClass);
+        $services = $di->getServices();
+
+        $service = array_shift($services);
+
+        $this->assertInstanceOf('\Soli\Di\Service', $service);
+    }
 }
 
 class MyComponent

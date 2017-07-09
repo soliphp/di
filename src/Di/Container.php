@@ -162,6 +162,22 @@ class Container implements ContainerInterface, \ArrayAccess
     }
 
     /**
+     * 获取容器中的某个 Service 对象实例
+     *
+     * @param string $id 服务标识
+     * @return Service
+     * @throws \Exception
+     */
+    public function getService($id)
+    {
+        if (isset(static::$services[$id])) {
+            return static::$services[$id];
+        }
+
+        throw new \Exception("Service '$id' wasn't found in the dependency injection container");
+    }
+
+    /**
      * 获取容器中的所有服务
      *
      * @return array
