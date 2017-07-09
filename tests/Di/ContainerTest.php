@@ -215,6 +215,14 @@ class ContainerTest extends TestCase
         $service = $this->di->get('closure');
         $this->assertEquals('service1 returned', $service);
     }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testCannotResolved()
+    {
+        $service = $this->di->get('notExistsService');
+    }
 }
 
 class MyComponent

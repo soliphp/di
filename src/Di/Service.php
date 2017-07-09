@@ -72,7 +72,7 @@ class Service
      * @param array $parameters 参数
      * @param \Soli\Di\Container $di 容器对象实例
      * @return mixed
-     * @throws \Exception
+     * @throws \DomainException
      */
     public function resolve(array $parameters = null, Container $di = null)
     {
@@ -107,7 +107,7 @@ class Service
                 $instance = $this->createInstanceFromClassName($definition, $parameters);
                 break;
             default:
-                throw new \Exception("Service '{$this->id}' cannot be resolved");
+                throw new \DomainException("Service '{$this->id}' cannot be resolved");
         }
 
         // 如果是 shared, 保存实例
@@ -139,12 +139,12 @@ class Service
      * @param string $className
      * @param array  $parameters
      * @return object
-     * @throws \Exception
+     * @throws \DomainException
      */
     protected function createInstanceFromClassName($className, array $parameters = null)
     {
         if (!class_exists($className)) {
-            throw new \Exception("Service '{$this->id}' cannot be resolved");
+            throw new \DomainException("Service '{$this->id}' cannot be resolved");
         }
 
         $reflector = new ReflectionClass($className);

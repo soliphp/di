@@ -90,7 +90,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param string $id 服务标识|类名
      * @param array $parameters 参数
      * @return mixed
-     * @throws \Exception
+     * @throws \InvalidArgumentException
      */
     public function get($id, array $parameters = null)
     {
@@ -101,7 +101,7 @@ class Container implements ContainerInterface, \ArrayAccess
             // 自动将类名注册为服务
             $service = $this->set($id, $id, true);
         } else {
-            throw new \Exception("Service '$id' wasn't found in the dependency injection container");
+            throw new \InvalidArgumentException("Service '$id' wasn't found in the dependency injection container");
         }
 
         // 解析服务, 返回服务定义的执行结果
@@ -168,7 +168,7 @@ class Container implements ContainerInterface, \ArrayAccess
      *
      * @param string $id 服务标识
      * @return Service
-     * @throws \Exception
+     * @throws \InvalidArgumentException
      */
     public function getService($id)
     {
@@ -176,7 +176,7 @@ class Container implements ContainerInterface, \ArrayAccess
             return static::$services[$id];
         }
 
-        throw new \Exception("Service '$id' wasn't found in the dependency injection container");
+        throw new \InvalidArgumentException("Service '$id' wasn't found in the dependency injection container");
     }
 
     /**
