@@ -6,6 +6,7 @@ use Soli\Tests\TestCase;
 use Soli\Di\Container;
 use Soli\Di\ContainerInterface;
 use Soli\Di\ContainerAwareInterface;
+use Soli\Di\ContainerAwareTrait;
 
 class ContainerTest extends TestCase
 {
@@ -224,7 +225,7 @@ class ContainerTest extends TestCase
         $this->di->set('someService', $this->myComponent);
         $service = $this->di->get('someService');
 
-        $this->assertInstanceOf('\Soli\Di\ContainerInterface', $service->getDi());
+        $this->assertInstanceOf('\Soli\Di\ContainerInterface', $service->getContainer());
     }
 
     public function testClosureInjectionUseThis()
@@ -267,25 +268,9 @@ class ContainerTest extends TestCase
 
 class MyComponent implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     protected $id;
-
-    /**
-     * @var \Soli\Di\ContainerInterface
-     */
-    protected $container;
-
-    public function setDi(ContainerInterface $di)
-    {
-        $this->container = $di;
-    }
-
-    /**
-     * @return \Soli\Di\ContainerInterface
-     */
-    public function getDi()
-    {
-        return $this->container;
-    }
 
     public function __construct($id = 0)
     {

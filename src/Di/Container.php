@@ -110,7 +110,7 @@ class Container implements ContainerInterface, \ArrayAccess
 
         // 当前服务实现了 ContainerAwareInterface 接口时，自动为其设置容器
         if ($instance instanceof ContainerAwareInterface) {
-            $instance->setDi($this);
+            $instance->setContainer($this);
         }
 
         return $instance;
