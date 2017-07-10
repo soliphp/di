@@ -39,7 +39,7 @@ abstract class ServiceProvider extends Component
 
         $service = $this;
 
-        $this->di->set(
+        $this->container->set(
             $this->id,
             function () use ($service) {
                 return $service->register();

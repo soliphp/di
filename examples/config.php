@@ -11,7 +11,7 @@ return [
         'host'        => 'localhost',
         'port'        => 6379,
         'database'    => 0,
-        'prefix'      => 'soli:di:',
+        'prefix'      => 'soli:container:',
     ],
 
     'db' => [
