@@ -60,12 +60,11 @@ class Container implements ContainerInterface, \ArrayAccess
      *
      * @param string $id 服务标识
      * @param \Closure|object|string $definition 服务定义
-     * @param bool $shared 为 true 则注册单例服务
      * @return \Soli\Di\ServiceInterface
      */
-    public function set($id, $definition, $shared = false)
+    public function set($id, $definition)
     {
-        $service = new Service($id, $definition, $shared);
+        $service = new Service($id, $definition, false);
         static::$services[$id] = $service;
         return $service;
     }
@@ -79,7 +78,9 @@ class Container implements ContainerInterface, \ArrayAccess
      */
     public function setShared($id, $definition)
     {
-        return $this->set($id, $definition, true);
+        $service = new Service($id, $definition, true);
+        static::$services[$id] = $service;
+        return $service;
     }
 
     /**
@@ -99,7 +100,7 @@ class Container implements ContainerInterface, \ArrayAccess
             $service = static::$services[$id];
         } elseif (class_exists($id)) {
             // 自动将类名注册为服务
-            $service = $this->set($id, $id, true);
+            $service = $this->setShared($id, $id);
         } else {
             throw new \InvalidArgumentException("Service '$id' wasn't found in the dependency injection container");
         }
@@ -203,7 +204,7 @@ class Container implements ContainerInterface, \ArrayAccess
 
     public function offsetSet($id, $definition)
     {
-        $this->set($id, $definition, true);
+        $this->setShared($id, $definition);
     }
 
     public function offsetUnset($id)
