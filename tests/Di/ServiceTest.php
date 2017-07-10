@@ -40,11 +40,6 @@ class ServiceTest extends TestCase
         $this->assertInstanceOf('\stdClass', $a);
     }
 
-    /**
-     * 不支持注册数组
-     *
-     * @expectedException \Exception
-     */
     public function testResolveArray()
     {
         $arr = [1, 2];

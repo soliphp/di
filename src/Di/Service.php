@@ -22,9 +22,9 @@ class Service implements ServiceInterface
     protected $id;
 
     /**
-     * 服务定义, Closure|对象实例|类名
+     * 服务定义, Closure|对象实例|类名|数组
      *
-     * @var \Closure|object|string
+     * @var \Closure|object|string|array
      */
     protected $definition;
 
@@ -105,6 +105,10 @@ class Service implements ServiceInterface
             case 'string':
                 // 已存在的类名
                 $instance = $this->createInstanceFromClassName($definition, $parameters);
+                break;
+            case 'array':
+                // 数组，仅存储
+                $instance = $definition;
                 break;
             default:
                 throw new \DomainException("Service '{$this->id}' cannot be resolved");

@@ -59,7 +59,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * 注册一个服务到容器
      *
      * @param string $id 服务标识
-     * @param \Closure|object|string $definition 服务定义
+     * @param mixed $definition 服务定义
      * @return \Soli\Di\ServiceInterface
      */
     public function set($id, $definition)
@@ -73,7 +73,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * 注册单例服务
      *
      * @param string $id 服务标识
-     * @param \Closure|object|string $definition 服务定义
+     * @param mixed $definition 服务定义
      * @return \Soli\Di\ServiceInterface
      */
     public function setShared($id, $definition)

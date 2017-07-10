@@ -23,7 +23,7 @@ Soli Dependency Injection Container
 
 ### 注册服务
 
-`服务提供者的格式`，可以是 `匿名函数、对象实例或类名`。
+`服务提供者的格式`，可以是 `匿名函数、对象实例、类名或数组`。
 
 #### 使用匿名函数注册服务
 
@@ -63,6 +63,23 @@ Soli Dependency Injection Container
     $container->set('someComponent', '\SomeNamespace\SomeComponent');
 
 将在获取服务时，返回对应类名的实例化对象。
+
+#### 使用数组注册服务
+
+注：`注册数组类型数据作为服务，仅作为存储，不做任何解析和转换。`
+
+    $config = [
+        'application' => [
+            'viewsDir'       => __DIR__ . '/views/',
+            'logsDir'        => __DIR__ . '/logs/',
+            'cacheDir'       => __DIR__ . '/cache/',
+        ],
+        // ...
+    ];
+
+    $container->set('config', $config);
+
+将在获取服务时，返回注册的数组信息。
 
 #### 获取服务
 
