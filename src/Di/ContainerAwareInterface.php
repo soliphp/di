@@ -12,9 +12,9 @@ interface ContainerAwareInterface
     /**
      * 设置依赖注入容器
      *
-     * @param \Soli\Di\ContainerInterface $di 容器对象实例
+     * @param \Soli\Di\ContainerInterface $container 容器对象实例
      */
-    public function setDi(ContainerInterface $di);
+    public function setDi(ContainerInterface $container);
 
     /**
      * 获取依赖注入容器

@@ -70,11 +70,11 @@ class Service implements ServiceInterface
      * 解析服务
      *
      * @param array $parameters 参数
-     * @param \Soli\Di\ContainerInterface $di 容器对象实例
+     * @param \Soli\Di\ContainerInterface $container 容器对象实例
      * @return mixed
      * @throws \DomainException
      */
-    public function resolve(array $parameters = null, ContainerInterface $di = null)
+    public function resolve(array $parameters = null, ContainerInterface $container = null)
     {
         // 为 shared 服务且解析过则直接返回实例
         if ($this->shared && $this->sharedInstance !== null) {
@@ -91,8 +91,8 @@ class Service implements ServiceInterface
                 if ($definition instanceof Closure) {
                     // 绑定匿名函数到当前的容器对象实例上
                     // 以便在匿名函数内通过 $this 访问容器中的其他服务
-                    if (is_object($di)) {
-                        $definition = Closure::bind($definition, $di);
+                    if (is_object($container)) {
+                        $definition = Closure::bind($definition, $container);
                     }
 
                     // Closure
