@@ -29,21 +29,21 @@ Soli Dependency Injection Container
 
     use Soli\Di\Container;
 
-    $di = new Container();
+    $container = new Container();
 
     // 注册服务，存储服务的定义
-    $di->set('someComponent', function () {
+    $container->set('someComponent', function () {
         return new SomeComponent;
     });
 
 *使用 $this 访问容器中的其他服务*
 
-`当使用匿名函数注册服务时，函数体内可以使用 $this 表示当前的 $di 容器对象实例，
+`当使用匿名函数注册服务时，函数体内可以使用 $this 表示当前的 $container 容器对象实例，
 直接访问容器中的其他服务，便于服务之间进行交互。`
 
     // 注册服务，存储服务的定义
-    $di->set('someService', function () {
-        // 此处的 $tihs 即是当前的 $di 容器对象实例
+    $container->set('someService', function () {
+        // 此处的 $tihs 即是当前的 $container 容器对象实例
         var_dump($this->getServices());
 
         // 通过 $this 直接访问容器中的其他服务
@@ -54,20 +54,20 @@ Soli Dependency Injection Container
 
 #### 使用对象实例注册服务
 
-    $di->set('someComponent', new \SomeNamespace\SomeComponent());
+    $container->set('someComponent', new \SomeNamespace\SomeComponent());
 
 将在获取服务时，返回对应的对象实例。
 
 #### 使用类名注册服务
 
-    $di->set('someComponent', '\SomeNamespace\SomeComponent');
+    $container->set('someComponent', '\SomeNamespace\SomeComponent');
 
 将在获取服务时，返回对应类名的实例化对象。
 
 #### 获取服务
 
     // 获取服务，调用服务定义，返回服务定义的执行结果
-    $service = $di->get('someService');
+    $service = $container->get('someService');
 
 ### 共享（单例）服务
 
@@ -77,17 +77,17 @@ Soli Dependency Injection Container
 
 与 set 方法对应，我们可以使用 setShared 方法，将服务注册为共享服务：
 
-    $di->setShared('someService', <Some definition>);
+    $container->setShared('someService', <Some definition>);
 
 #### 获取共享服务
 
 当一个服务注册为非共享服务时，我们依然可以通过 getShared 方法获取共享实例：
 
-    $service = $di->getShared('someService');
+    $service = $container->getShared('someService');
 
 对于类名无论是否已注册为服务，我们都可以直接通过容器获取到它的共享实例：
 
-    $service = $di->getShared('\SomeNamespace\SomeComponent');
+    $service = $container->getShared('\SomeNamespace\SomeComponent');
 
 这对于我们日常开发中经常用到的单例模式，将格外的方便。
 
