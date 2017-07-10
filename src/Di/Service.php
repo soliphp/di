@@ -22,9 +22,9 @@ class Service implements ServiceInterface
     protected $id;
 
     /**
-     * 服务定义, 类名|对象实例或Closure
+     * 服务定义, Closure|对象实例|类名
      *
-     * @var object|string|array
+     * @var \Closure|object|string
      */
     protected $definition;
 

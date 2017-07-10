@@ -15,7 +15,7 @@ interface ContainerInterface extends PsrContainerInterface
      * 注册一个服务到容器
      *
      * @param string $id 服务标识
-     * @param mixed $definition 服务定义, 类名|对象实例或Closure
+     * @param \Closure|object|string $definition 服务定义
      * @return \Soli\Di\ServiceInterface
      */
     public function set($id, $definition);
@@ -24,7 +24,7 @@ interface ContainerInterface extends PsrContainerInterface
      * 注册单例服务
      *
      * @param string $id 服务标识
-     * @param mixed $definition 服务定义
+     * @param \Closure|object|string $definition 服务定义
      * @return \Soli\Di\ServiceInterface
      */
     public function setShared($id, $definition);
