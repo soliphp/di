@@ -92,4 +92,14 @@ class ServiceTest extends TestCase
 
         $service->resolve();
     }
+
+    /**
+     * @expectedException \Exception
+     */
+    public function testResolvedCannotCase()
+    {
+        $service = new Service('cannotCase', null);
+
+        $service->resolve();
+    }
 }
