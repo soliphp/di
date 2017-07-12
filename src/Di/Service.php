@@ -92,7 +92,7 @@ class Service implements ServiceInterface
                     // 绑定匿名函数到当前的容器对象实例上
                     // 以便在匿名函数内通过 $this 访问容器中的其他服务
                     if (is_object($container)) {
-                        $definition = Closure::bind($definition, $container);
+                        $definition = $definition->bindTo($container);
                     }
 
                     // Closure
