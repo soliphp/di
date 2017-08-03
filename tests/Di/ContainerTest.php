@@ -5,8 +5,9 @@ namespace Soli\Tests\Di;
 use Soli\Tests\TestCase;
 use Soli\Di\Container;
 use Soli\Di\ContainerInterface;
-use Soli\Di\ContainerAwareInterface;
-use Soli\Di\ContainerAwareTrait;
+use Soli\Di\ServiceInterface;
+
+use Soli\Tests\Data\Di\MyComponent;
 
 class ContainerTest extends TestCase
 {
@@ -15,20 +16,14 @@ class ContainerTest extends TestCase
      */
     protected $container;
 
-    /**
-     * @var string
-     */
-    protected $myComponent;
-
     public function setUp()
     {
         $this->container = new Container();
-        $this->myComponent = __NAMESPACE__ . '\MyComponent';
     }
 
     public function testContainerInstance()
     {
-        $this->assertInstanceOf('\Soli\Di\ContainerInterface', Container::instance());
+        $this->assertInstanceOf(ContainerInterface::class, Container::instance());
     }
 
     public function testClosureInjection()
@@ -56,10 +51,10 @@ class ContainerTest extends TestCase
         // 清除上面测试用例中已经设置的 "someService" 服务，的共享实例
         $this->container->remove('someService');
 
-        $this->container->set('someService', $this->myComponent);
+        $this->container->set('someService', MyComponent::class);
         $service = $this->container->get('someService');
 
-        $this->assertInstanceOf($this->myComponent, $service);
+        $this->assertInstanceOf(MyComponent::class, $service);
     }
 
     public function testClassWithParametersInjection()
@@ -67,7 +62,7 @@ class ContainerTest extends TestCase
         // 清除上面测试用例中已经设置的 "someService" 服务，的共享实例
         $this->container->remove('someService');
 
-        $this->container->set('someService', $this->myComponent);
+        $this->container->set('someService', MyComponent::class);
         $service = $this->container->get('someService', [100]);
 
         $this->assertEquals(100, $service->getId());
@@ -75,10 +70,10 @@ class ContainerTest extends TestCase
 
     public function testInstanceInjection()
     {
-        $this->container->set('instance', new $this->myComponent);
+        $this->container->set('instance', new MyComponent());
         $service = $this->container->get('instance');
 
-        $this->assertInstanceOf($this->myComponent, $service);
+        $this->assertInstanceOf(MyComponent::class, $service);
     }
 
     public function testArrayInjection()
@@ -98,7 +93,7 @@ class ContainerTest extends TestCase
         // 清除上面测试用例中已经设置的 "someService" 服务，的共享实例
         $this->container->remove('someService');
 
-        $this->container->set('someService', $this->myComponent);
+        $this->container->set('someService', MyComponent::class);
 
         // 获取一个新的实例
         $service1 = $this->container->get('someService');
@@ -123,7 +118,7 @@ class ContainerTest extends TestCase
         // 清除上面测试用例中已经设置的 "someService" 服务，的共享实例
         $this->container->remove('someService');
 
-        $this->container->setShared('someService', $this->myComponent);
+        $this->container->setShared('someService', MyComponent::class);
 
         $service1 = $this->container->get('someService');
         $service2 = $this->container->get('someService');
@@ -144,8 +139,8 @@ class ContainerTest extends TestCase
         $container = $this->container;
 
         // offsetSet
-        $container['someService1'] = new \stdClass;
-        $container->setShared('someService2', new \ArrayObject);
+        $container['someService1'] = new \stdClass();
+        $container->setShared('someService2', new \ArrayObject());
 
         $service1 = $container->get('someService1');
         // offsetGet
@@ -157,32 +152,32 @@ class ContainerTest extends TestCase
             unset($container['someService2']);
         }
 
-        $this->assertInstanceOf('\stdClass', $service1);
-        $this->assertInstanceOf('\ArrayObject', $service2);
+        $this->assertInstanceOf('stdClass', $service1);
+        $this->assertInstanceOf('ArrayObject', $service2);
     }
 
     public function testMagicGet()
     {
         $container = $this->container;
 
-        $container['someService1'] = new \stdClass;
-        $container->setShared('someService2', new \ArrayObject);
+        $container['someService1'] = new \stdClass();
+        $container->setShared('someService2', new \ArrayObject());
 
         $service1 = $container->someService1;
         $service2 = $container->someService2;
 
-        $this->assertInstanceOf('\stdClass', $service1);
-        $this->assertInstanceOf('\ArrayObject', $service2);
+        $this->assertInstanceOf('stdClass', $service1);
+        $this->assertInstanceOf('ArrayObject', $service2);
     }
 
     public function testGetServiceById()
     {
         $container = $this->container;
 
-        $container->set('someService', new \stdClass);
+        $container->set('someService', new \stdClass());
         $service = $container->getService('someService');
 
-        $this->assertInstanceOf('\Soli\Di\ServiceInterface', $service);
+        $this->assertInstanceOf(ServiceInterface::class, $service);
     }
 
     /**
@@ -197,19 +192,27 @@ class ContainerTest extends TestCase
     {
         $container = $this->container;
 
-        $container->set('someService', new \stdClass);
+        $container->set('someService', new \stdClass());
         $services = $container->getServices();
 
         $service = array_shift($services);
 
-        $this->assertInstanceOf('\Soli\Di\ServiceInterface', $service);
+        $this->assertInstanceOf(ServiceInterface::class, $service);
     }
 
     public function testGetClassName()
     {
-        $service = $this->container->get($this->myComponent);
+        $service = $this->container->get(MyComponent::class);
 
-        $this->assertInstanceOf($this->myComponent, $service);
+        $this->assertInstanceOf(MyComponent::class, $service);
+    }
+
+    public function testInterfaceVsClass()
+    {
+        $this->container->set(ContainerInterface::class, Container::class);
+        $container = $this->container->get(ContainerInterface::class);
+
+        $this->assertInstanceOf(ContainerInterface::class, $container);
     }
 
     public function testContainerAware()
@@ -217,10 +220,10 @@ class ContainerTest extends TestCase
         // 清除上面测试用例中已经设置的 "someService" 服务，的共享实例
         $this->container->remove('someService');
 
-        $this->container->set('someService', $this->myComponent);
+        $this->container->set('someService', MyComponent::class);
         $service = $this->container->get('someService');
 
-        $this->assertInstanceOf('\Soli\Di\ContainerInterface', $service->getContainer());
+        $this->assertInstanceOf(ContainerInterface::class, $service->getContainer());
     }
 
     public function testClosureInjectionUseThis()
@@ -230,7 +233,7 @@ class ContainerTest extends TestCase
         });
         $service = $this->container->get('closure');
 
-        $this->assertInstanceOf('\Soli\Di\ContainerInterface', $service);
+        $this->assertInstanceOf(ContainerInterface::class, $service);
     }
 
     public function testClosureInjectionUseThisCallOtherService()
@@ -258,26 +261,5 @@ class ContainerTest extends TestCase
     public function testCannotResolved()
     {
         $service = $this->container->get('notExistsService');
-    }
-}
-
-class MyComponent implements ContainerAwareInterface
-{
-    use ContainerAwareTrait;
-
-    protected $id;
-
-    public function __construct($id = 0)
-    {
-        if ($id) {
-            $this->id = $id;
-        } else {
-            $this->id = microtime(true) . mt_rand();
-        }
-    }
-
-    public function getId()
-    {
-        return $this->id;
     }
 }
