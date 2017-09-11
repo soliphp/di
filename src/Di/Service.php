@@ -90,7 +90,7 @@ class Service implements ServiceInterface
             case 'object':
                 if ($definition instanceof Closure) {
                     // 绑定匿名函数到当前的容器对象实例上
-                    // 以便在匿名函数内通过 $this 访问容器中的其他服务
+                    // 便于在匿名函数内通过 $this 访问容器中的其他服务
                     if (is_object($container)) {
                         $definition = $definition->bindTo($container);
                     }
