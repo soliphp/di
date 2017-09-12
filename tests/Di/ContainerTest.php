@@ -2,7 +2,8 @@
 
 namespace Soli\Tests\Di;
 
-use Soli\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
+
 use Soli\Di\Container;
 use Soli\Di\ContainerInterface;
 use Soli\Di\ServiceInterface;

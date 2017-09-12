@@ -2,7 +2,8 @@
 
 namespace Soli\Tests\Di;
 
-use Soli\Tests\TestCase;
+use PHPUnit\Framework\TestCase;
+
 use Soli\Di\Service;
 
 class ServiceTest extends TestCase
