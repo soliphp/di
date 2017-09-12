@@ -46,7 +46,7 @@ class Service implements ServiceInterface
      * Service constructor.
      *
      * @param string $id 服务标识
-     * @param object|string $definition
+     * @param object|string|array $definition
      * @param bool $shared
      */
     public function __construct($id, $definition, $shared = false)
