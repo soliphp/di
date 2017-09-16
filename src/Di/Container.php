@@ -165,6 +165,17 @@ class Container implements ContainerInterface, \ArrayAccess
     }
 
     /**
+     * 清空容器
+     *
+     * @return void
+     */
+    public function clear()
+    {
+        static::$services = [];
+        static::$sharedInstances = [];
+    }
+
+    /**
      * 获取容器中的某个 Service 对象实例
      *
      * @param string $id 服务标识

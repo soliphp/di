@@ -202,6 +202,19 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(ServiceInterface::class, $service);
     }
 
+    public function testClear()
+    {
+        $container = $this->container;
+
+        $services = $container->getServices();
+        $this->assertTrue(!empty($services));
+
+        $container->clear();
+
+        $services = $container->getServices();
+        $this->assertTrue(empty($services));
+    }
+
     public function testGetClassName()
     {
         $service = $this->container->get(MyComponent::class);

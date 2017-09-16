@@ -66,6 +66,13 @@ interface ContainerInterface extends PsrContainerInterface
     public function remove($id);
 
     /**
+     * 清空容器
+     *
+     * @return void
+     */
+    public function clear();
+
+    /**
      * 获取容器中的某个 Service 对象实例
      *
      * @param string $id 服务标识
