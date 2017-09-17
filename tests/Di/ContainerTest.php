@@ -207,12 +207,12 @@ class ContainerTest extends TestCase
         $container = $this->container;
 
         $services = $container->getServices();
-        $this->assertTrue(!empty($services));
+        $this->assertNotEmpty($services);
 
         $container->clear();
 
         $services = $container->getServices();
-        $this->assertTrue(empty($services));
+        $this->assertEmpty($services);
     }
 
     public function testGetClassName()
