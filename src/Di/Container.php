@@ -226,9 +226,9 @@ class Container implements ContainerInterface, \ArrayAccess
     /**
      * 允许将服务标识作为属性名访问
      *
-     *<code>
+     *<pre>
      * $container->someService;
-     *</code>
+     *</pre>
      *
      * @param string $id 服务标识
      * @return mixed
