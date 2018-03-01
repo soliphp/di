@@ -86,6 +86,7 @@ class ServiceTest extends TestCase
 
     /**
      * @expectedException \Exception
+     * @expectedExceptionMessageRegExp /Service '.+' cannot be resolved/
      */
     public function testCannotResolved()
     {
@@ -96,6 +97,7 @@ class ServiceTest extends TestCase
 
     /**
      * @expectedException \Exception
+     * @expectedExceptionMessageRegExp /Service '.+' cannot be resolved/
      */
     public function testResolvedCannotCase()
     {

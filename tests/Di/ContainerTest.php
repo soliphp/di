@@ -184,6 +184,7 @@ class ContainerTest extends TestCase
 
     /**
      * @expectedException \Exception
+     * @expectedExceptionMessageRegExp /Service '.+' wasn't found in the dependency injection container/
      */
     public function testCantGetServiceById()
     {
@@ -274,6 +275,7 @@ class ContainerTest extends TestCase
 
     /**
      * @expectedException \Exception
+     * @expectedExceptionMessageRegExp /Service '.+' wasn't found in the dependency injection container/
      */
     public function testCannotResolved()
     {
