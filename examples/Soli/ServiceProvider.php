@@ -39,15 +39,11 @@ abstract class ServiceProvider extends Component
 
         $service = $this;
 
-        $this->defer
-            ? function () use ($service) {
-                return $service->register();
-            }
-            : $service->register();
-
         $this->container->set(
             $this->id,
-            $this->defer ? function () use ($service) { return $service->register(); } : $service->register()
+            $this->defer ? function () use ($service) {
+                return $service->register();
+            } : $service->register()
         );
     }
 }
