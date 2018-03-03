@@ -7,6 +7,10 @@ Soli Dependency Injection Container
 
 把组件之间的依赖，转换为对容器的依赖，通过容器进行服务管理(创建、配置和定位)。
 
+[![Build Status](https://travis-ci.org/soliphp/di.svg?branch=master)](https://travis-ci.org/soliphp/di)
+[![Coverage Status](https://coveralls.io/repos/github/soliphp/di/badge.svg?branch=master)](https://coveralls.io/github/soliphp/di?branch=master)
+[![License](https://poser.pugx.org/soliphp/di/license)](https://packagist.org/packages/soliphp/di)
+
 ## 安装
 
 使用 `composer` 安装到你的项目：
