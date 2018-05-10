@@ -6,10 +6,6 @@ require APP_PATH . '/bootstrap.php';
 
 $app = new \Soli\ExampleApp();
 
-$app->registerBaseServiceProviders();
-
-$app->registerConfiguredProviders();
-
 // 使用访问对象属性的方式，访问容器服务，同 $container->getShared() 方法
 $service = $app->testService;
 var_dump($service);

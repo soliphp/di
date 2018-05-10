@@ -33,7 +33,7 @@ class Component implements ContainerAwareInterface
     public function getContainer()
     {
         if ($this->diContainer === null) {
-            $this->diContainer = Container::instance() ?: new Container;
+            $this->diContainer = Container::instance() ?: new Container();
         }
         return $this->diContainer;
     }

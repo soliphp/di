@@ -10,6 +10,10 @@ class RedisServiceProvider extends ServiceProvider
 
     protected $defer = true;
 
+    /**
+     * @return \Redis
+     * @throws \Exception
+     */
     public function register()
     {
         // 获取 redis 配置信息
