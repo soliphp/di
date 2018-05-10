@@ -107,7 +107,8 @@ Soli Dependency Injection Container
 
 #### 获取服务
 
-    // 获取服务，调用服务定义，返回服务定义的执行结果
+获取服务时，调用服务定义，返回服务定义的执行结果：
+
     $service = $container->get('someService');
 
 ### 共享（单例）服务
@@ -122,9 +123,11 @@ Soli Dependency Injection Container
 
 #### 获取共享服务
 
-当一个服务注册为非共享服务时，我们依然可以通过 getShared 方法获取共享实例：
+与 get 方法对应，我们可以使用 getShared 方法，获取共享服务：
 
     $service = $container->getShared('someService');
+
+`当一个服务注册为非共享服务时，依然可以通过 getShared 方法获取共享实例。`
 
 对于类名无论是否已注册为服务，我们都可以直接通过容器获取到它的共享实例：
 
@@ -132,7 +135,15 @@ Soli Dependency Injection Container
 
 这对于我们日常开发中经常用到的单例模式，将格外的方便。
 
-#### 静态方式访问容器
+使用访问对象属性的方式，访问容器服务：
+
+    $service = $container->someService;
+
+数组访问方式访问容器服务：
+
+    $service = $container['someService'];
+
+### 静态方式访问容器
 
     Container::instance()->getShared('someService');
 
