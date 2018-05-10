@@ -31,7 +31,7 @@ matrix:
     - php: nightly
 
 before_script:
-  - composer require $COMPOSER_ARGS $DEPS
+  - composer require --dev $COMPOSER_ARGS $DEPS
 
 script:
   - php vendor/bin/phpunit
