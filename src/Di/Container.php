@@ -28,6 +28,13 @@ class Container implements ContainerInterface, \ArrayAccess
     protected static $services = [];
 
     /**
+     * The container's instances.
+     *
+     * @var array
+     */
+    protected $instances = [];
+
+    /**
      * 存储 getShared 方法返回的服务实例（服务定义的执行结果）
      *
      * @var array
