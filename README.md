@@ -11,6 +11,26 @@ Soli Dependency Injection Container
 [![Coverage Status](https://coveralls.io/repos/github/soliphp/di/badge.svg?branch=master)](https://coveralls.io/github/soliphp/di?branch=master)
 [![License](https://poser.pugx.org/soliphp/di/license)](https://packagist.org/packages/soliphp/di)
 
+
+## Table of Contents
+
+* [安装](#安装)
+* [使用](#使用)
+   * [注册服务](#注册服务)
+      * [使用匿名函数注册服务](#使用匿名函数注册服务)
+      * [使用对象实例注册服务](#使用对象实例注册服务)
+      * [使用类名注册服务](#使用类名注册服务)
+      * [使用数组注册服务](#使用数组注册服务)
+      * [获取服务](#获取服务)
+   * [共享（单例）服务](#共享单例服务)
+      * [注册共享服务](#注册共享服务)
+      * [获取共享服务](#获取共享服务)
+      * [静态方式访问容器](#静态方式访问容器)
+* [示例](#示例)
+* [API 参考](#api-参考)
+* [测试](#测试)
+* [License](#license)
+
 ## 安装
 
 使用 `composer` 安装到你的项目：
@@ -111,6 +131,10 @@ Soli Dependency Injection Container
     $service = $container->getShared('\SomeNamespace\SomeComponent');
 
 这对于我们日常开发中经常用到的单例模式，将格外的方便。
+
+#### 静态方式访问容器
+
+    Container::instance()->getShared('someService');
 
 ## 示例
 
