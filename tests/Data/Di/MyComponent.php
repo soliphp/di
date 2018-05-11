@@ -11,8 +11,12 @@ class MyComponent implements ContainerAwareInterface
 
     protected $id;
 
-    public function __construct($id = 0)
+    public $a;
+
+    public function __construct(A $a, $id = 0)
     {
+        $this->a = $a;
+
         if ($id) {
             $this->id = $id;
         } else {
@@ -23,5 +27,34 @@ class MyComponent implements ContainerAwareInterface
     public function getId()
     {
         return $this->id;
+    }
+}
+
+
+class A
+{
+    public $b;
+    public $c;
+    public $d;
+
+    public function __construct(B $b, C $c, $d = null)
+    {
+        $this->b = $b;
+        $this->c = $c;
+        $this->d = $d;
+    }
+}
+
+class B
+{
+    public function __construct()
+    {
+    }
+}
+
+class C
+{
+    public function __construct()
+    {
     }
 }

@@ -98,9 +98,8 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param string $id 服务标识|类名
      * @param array $parameters 参数
      * @return mixed
-     * @throws \InvalidArgumentException
      */
-    public function get($id, array $parameters = null)
+    public function get($id, array $parameters = [])
     {
         if (isset(static::$services[$id])) {
             /** @var \Soli\Di\ServiceInterface $service 服务实例 */
@@ -132,7 +131,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param array $parameters 参数
      * @return mixed
      */
-    public function getShared($id, array $parameters = null)
+    public function getShared($id, array $parameters = [])
     {
         // 检查是否已解析
         if (isset(static::$sharedInstances[$id])) {

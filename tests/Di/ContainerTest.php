@@ -9,6 +9,11 @@ use Soli\Di\ContainerInterface;
 use Soli\Di\ServiceInterface;
 
 use Soli\Tests\Data\Di\MyComponent;
+use Soli\Tests\Data\Di\A;
+use Soli\Tests\Data\Di\B;
+use Soli\Tests\Data\Di\C;
+
+use stdClass;
 
 class ContainerTest extends TestCase
 {
@@ -53,9 +58,13 @@ class ContainerTest extends TestCase
         $this->container->remove('someService');
 
         $this->container->set('someService', MyComponent::class);
+        /** @var MyComponent $service */
         $service = $this->container->get('someService');
 
         $this->assertInstanceOf(MyComponent::class, $service);
+        $this->assertInstanceOf(A::class, $service->a);
+        $this->assertInstanceOf(B::class, $service->a->b);
+        $this->assertInstanceOf(C::class, $service->a->c);
     }
 
     public function testClassWithParametersInjection()
@@ -64,29 +73,17 @@ class ContainerTest extends TestCase
         $this->container->remove('someService');
 
         $this->container->set('someService', MyComponent::class);
-        $service = $this->container->get('someService', [100]);
+        $service = $this->container->get('someService', ['id' => 100]);
 
         $this->assertEquals(100, $service->getId());
     }
 
     public function testInstanceInjection()
     {
-        $this->container->set('instance', new MyComponent());
+        $this->container->set('instance', new stdClass());
         $service = $this->container->get('instance');
 
-        $this->assertInstanceOf(MyComponent::class, $service);
-    }
-
-    public function testArrayInjection()
-    {
-        $array = [
-            'aa' => 11,
-            'bb' => 22,
-        ];
-        $this->container->set('array', $array);
-        $service = $this->container->get('array');
-
-        $this->assertEquals('22', $service['bb']);
+        $this->assertInstanceOf(stdClass::class, $service);
     }
 
     public function testGetShared()

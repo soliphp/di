@@ -16,5 +16,5 @@ interface ServiceInterface
      * @param \Soli\Di\ContainerInterface $container 容器对象实例
      * @return mixed
      */
-    public function resolve(array $parameters = null, ContainerInterface $container = null);
+    public function resolve(array $parameters = [], ContainerInterface $container = null);
 }
