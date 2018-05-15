@@ -140,49 +140,18 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf('ArrayObject', $service2);
     }
 
-    public function testGetServiceById()
-    {
-        $container = $this->container;
-
-        $container->set('someService', new \stdClass());
-        $service = $container->getService('someService');
-
-        $this->assertInstanceOf(ServiceInterface::class, $service);
-    }
-
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessageRegExp /Service '.+' wasn't found in the dependency injection container/
-     */
-    public function testCantGetServiceById()
-    {
-        $this->container->getService('notExistsService');
-    }
-
-    public function testGetServices()
-    {
-        $container = $this->container;
-
-        $container->set('someService', new \stdClass());
-        $services = $container->getServices();
-
-        $service = array_shift($services);
-
-        $this->assertInstanceOf(ServiceInterface::class, $service);
-    }
-
     public function testClear()
     {
         $container = $this->container;
         $container->set('someService', new \stdClass());
 
-        $services = $container->getServices();
-        $this->assertNotEmpty($services);
+        $has = $container->has('someService');
+        $this->assertTrue($has);
 
         $container->clear();
 
-        $services = $container->getServices();
-        $this->assertEmpty($services);
+        $has = $container->has('someService');
+        $this->assertFalse($has);
     }
 
     public function testGetClassName()

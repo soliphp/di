@@ -146,32 +146,6 @@ class Container implements ContainerInterface, \ArrayAccess
         $this->sharedInstances = [];
     }
 
-    /**
-     * 获取容器中的某个 Service 对象实例
-     *
-     * @param string $id 服务标识
-     * @return \Soli\Di\ServiceInterface
-     * @throws \InvalidArgumentException
-     */
-    public function getService($id)
-    {
-        if (isset($this->services[$id])) {
-            return $this->services[$id];
-        }
-
-        throw new \InvalidArgumentException("Service '$id' wasn't found in the dependency injection container");
-    }
-
-    /**
-     * 获取容器中的所有服务
-     *
-     * @return \Soli\Di\ServiceInterface[]
-     */
-    public function getServices()
-    {
-        return $this->services;
-    }
-
     // 实现 \ArrayAccess 方法
 
     public function offsetExists($id)

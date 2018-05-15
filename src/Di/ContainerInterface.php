@@ -53,19 +53,4 @@ interface ContainerInterface extends PsrContainerInterface
      * @return void
      */
     public function clear();
-
-    /**
-     * 获取容器中的某个 Service 对象实例
-     *
-     * @param string $id 服务标识
-     * @return \Soli\Di\ServiceInterface
-     */
-    public function getService($id);
-
-    /**
-     * 获取容器中的所有服务
-     *
-     * @return \Soli\Di\ServiceInterface[]
-     */
-    public function getServices();
 }
