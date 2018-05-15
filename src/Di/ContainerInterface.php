@@ -32,6 +32,15 @@ interface ContainerInterface extends PsrContainerInterface
     public function get($id);
 
     /**
+     * 为服务添加别名
+     *
+     * @param string $alias
+     * @param string $abstract
+     * @return void
+     */
+    public function alias($alias, $abstract);
+
+    /**
      * 查询容器中是否存在某个服务
      *
      * @param string $id 服务标识

@@ -219,4 +219,51 @@ class ContainerTest extends TestCase
     {
         $this->container->get('notExistsService');
     }
+
+    public function testAlias()
+    {
+        $aliases = [
+            'app' => [
+                \Soli\Application::class,
+            ],
+            'container' => [
+                \Soli\Di\Container::class,
+                \Psr\Container\ContainerInterface::class,
+            ],
+            'one' => [
+                'two',
+            ],
+            'two' => [
+                'three',
+            ],
+        ];
+
+        $container = $this->container;
+        foreach ($aliases as $alias => $abstracts) {
+            foreach ($abstracts as $abstract) {
+                $container->alias($alias, $abstract);
+            }
+        }
+
+        $containerAlias = $container->getAlias(\Psr\Container\ContainerInterface::class);
+        $oneAlias = $container->getAlias('three');
+
+        $this->assertEquals('container', $containerAlias);
+        $this->assertEquals('one', $oneAlias);
+    }
+
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessageRegExp /.+ is aliased to itself./
+     */
+    public function testAliasedItselfException()
+    {
+        $selfAlias = 'self_alias';
+
+        $container = $this->container;
+
+        $container->alias($selfAlias, $selfAlias);
+
+        $container->getAlias($selfAlias);
+    }
 }

@@ -35,6 +35,13 @@ class Container implements ContainerInterface, \ArrayAccess
     protected $sharedInstances = [];
 
     /**
+     * 别名列表
+     *
+     * @var array
+     */
+    public $aliases = [];
+
+    /**
      * 初始化容器默认实例
      */
     public function __construct()
@@ -65,6 +72,8 @@ class Container implements ContainerInterface, \ArrayAccess
      */
     public function set($id, $definition, $shared = true)
     {
+        unset($this->sharedInstances[$id], $this->aliases[$id]);
+
         $service = new Service($id, $definition, $shared);
         $this->services[$id] = $service;
         return $service;
@@ -81,6 +90,8 @@ class Container implements ContainerInterface, \ArrayAccess
      */
     public function get($id, array $parameters = [])
     {
+        $id = $this->getAlias($id);
+
         // 如果是共享实例已解析，则返回
         if (isset($this->sharedInstances[$id])) {
             return $this->sharedInstances[$id];
@@ -113,6 +124,31 @@ class Container implements ContainerInterface, \ArrayAccess
     }
 
     /**
+     * 为服务添加别名
+     *
+     * @param string $alias
+     * @param string $abstract
+     * @return void
+     */
+    public function alias($alias, $abstract)
+    {
+        $this->aliases[$abstract] = $alias;
+    }
+
+    public function getAlias($abstract)
+    {
+        if (!isset($this->aliases[$abstract])) {
+            return $abstract;
+        }
+
+        if ($this->aliases[$abstract] === $abstract) {
+            throw new \LogicException("[{$abstract}] is aliased to itself.");
+        }
+
+        return $this->getAlias($this->aliases[$abstract]);
+    }
+
+    /**
      * 查询容器中是否存在某个服务
      *
      * @param string $id 服务标识
@@ -120,7 +156,7 @@ class Container implements ContainerInterface, \ArrayAccess
      */
     public function has($id)
     {
-        return isset($this->services[$id]);
+        return isset($this->services[$id]) || isset($this->aliases[$id]);
     }
 
     /**
@@ -133,6 +169,7 @@ class Container implements ContainerInterface, \ArrayAccess
     {
         unset($this->services[$id]);
         unset($this->sharedInstances[$id]);
+        unset($this->aliases[$id]);
     }
 
     /**
@@ -144,6 +181,7 @@ class Container implements ContainerInterface, \ArrayAccess
     {
         $this->services = [];
         $this->sharedInstances = [];
+        $this->aliases = [];
     }
 
     // 实现 \ArrayAccess 方法
