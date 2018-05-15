@@ -52,7 +52,7 @@ class ContainerTest extends TestCase
         $this->assertEquals(3, $closureWithParameters);
     }
 
-    public function testClassInjection()
+    public function testClassTypeHintAutoInjection()
     {
         // 清除上面测试用例中已经设置的 "someService" 服务，的共享实例
         $this->container->remove('someService');
@@ -86,50 +86,21 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(stdClass::class, $service);
     }
 
-    public function testGetShared()
-    {
-        // 清除上面测试用例中已经设置的 "someService" 服务，的共享实例
-        $this->container->remove('someService');
-
-        $this->container->set('someService', MyComponent::class);
-
-        // 获取一个新的实例
-        $service1 = $this->container->get('someService');
-        // 获取并实例化一个共享实例
-        $service2 = $this->container->getShared('someService');
-        // 获取一个共享实例
-        $service3 = $this->container->getShared('someService');
-        // 获取一个新的实例
-        $service4 = $this->container->get('someService');
-
-        $false12 = $service1 ==  $service2;
-        $true32  = $service3 === $service2;
-        $false34 = $service3 === $service4;
-
-        $this->assertFalse($false12);
-        $this->assertTrue($true32);
-        $this->assertFalse($false34);
-    }
-
     public function testSetShared()
     {
         // 清除上面测试用例中已经设置的 "someService" 服务，的共享实例
         $this->container->remove('someService');
 
-        $this->container->setShared('someService', MyComponent::class);
+        $this->container->set('someService', MyComponent::class, true);
 
         $service1 = $this->container->get('someService');
         $service2 = $this->container->get('someService');
 
-        $service3 = $this->container->getShared('someService');
-
         $true12 = $service1 === $service2;
-        $true23 = $service3 === $service2;
-        $trueId13 = $service1->getId() === $service2->getId();
+        $trueId12 = $service1->getId() === $service2->getId();
 
         $this->assertTrue($true12);
-        $this->assertTrue($true23);
-        $this->assertTrue($trueId13);
+        $this->assertTrue($trueId12);
     }
 
     public function testArrayAccess()
@@ -138,7 +109,7 @@ class ContainerTest extends TestCase
 
         // offsetSet
         $container['someService1'] = new \stdClass();
-        $container->setShared('someService2', new \ArrayObject());
+        $container->set('someService2', new \ArrayObject());
 
         $service1 = $container->get('someService1');
         // offsetGet
@@ -160,7 +131,7 @@ class ContainerTest extends TestCase
         $container = $this->container;
 
         $container['someService1'] = new \stdClass();
-        $container->setShared('someService2', new \ArrayObject());
+        $container->set('someService2', new \ArrayObject());
 
         $service1 = $container->someService1;
         $service2 = $container->someService2;
@@ -203,6 +174,7 @@ class ContainerTest extends TestCase
     public function testClear()
     {
         $container = $this->container;
+        $container->set('someService', new \stdClass());
 
         $services = $container->getServices();
         $this->assertNotEmpty($services);

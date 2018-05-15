@@ -13,30 +13,6 @@ use Soli\Tests\Data\Di\UnresolvableDependency2;
 
 class ServiceTest extends TestCase
 {
-    public function testNonShared()
-    {
-        $service = new Service('someName', function () {
-            return new \stdClass;
-        }, false);
-
-        $c1 = $service->resolve();
-        $c2 = $service->resolve();
-
-        $this->assertFalse($c1 === $c2);
-    }
-
-    public function testShared()
-    {
-        $service = new Service('someName', function () {
-            return new \stdClass;
-        }, true);
-
-        $c1 = $service->resolve();
-        $c2 = $service->resolve();
-
-        $this->assertTrue($c1 === $c2);
-    }
-
     public function testResolveObjectInstance()
     {
         $service = new Service('someName', new \stdClass);
@@ -70,13 +46,16 @@ class ServiceTest extends TestCase
 
     public function testIsShared()
     {
-        $service = new Service('someName', function () {
+        $sharedService = new Service('sharedService', function () {
+            return new \stdClass;
+        }, true);
+
+        $nonSharedService = new Service('nonSharedService', function () {
             return new \stdClass;
         }, false);
 
-        $shared = $service->isShared();
-
-        $this->assertFalse($shared);
+        $this->assertTrue($sharedService->isShared());
+        $this->assertFalse($nonSharedService->isShared());
     }
 
     /**

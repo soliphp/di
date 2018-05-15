@@ -37,13 +37,6 @@ class Service implements ServiceInterface
     protected $shared = false;
 
     /**
-     * 存储共享服务实例（即服务定义的执行结果）
-     *
-     * @var mixed
-     */
-    protected $sharedInstance;
-
-    /**
      * 传入的参数
      *
      * @var array
@@ -68,11 +61,11 @@ class Service implements ServiceInterface
     {
         $this->id = $id;
         $this->definition = $definition;
-        $this->shared = (bool)$shared;
+        $this->shared = $shared;
     }
 
     /**
-     * 检查服务是否为共享的
+     * 服务是否为共享的
      *
      * @return bool
      */
@@ -91,11 +84,6 @@ class Service implements ServiceInterface
      */
     public function resolve(array $parameters = [], ContainerInterface $container = null)
     {
-        // 为 shared 服务且解析过则直接返回实例
-        if ($this->shared && $this->sharedInstance !== null) {
-            return $this->sharedInstance;
-        }
-
         $this->parameters = $parameters;
         $this->container = $container;
 
@@ -124,11 +112,6 @@ class Service implements ServiceInterface
                 break;
             default:
                 throw new \DomainException("Service '{$this->id}' cannot be resolved");
-        }
-
-        // 如果是 shared, 保存实例
-        if ($this->shared) {
-            $this->sharedInstance = $instance;
         }
 
         return $instance;

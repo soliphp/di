@@ -49,7 +49,7 @@ class Component implements ContainerAwareInterface
         $container = $this->getContainer();
 
         if ($container->has($name)) {
-            $service = $container->getShared($name);
+            $service = $container->get($name);
             // 将找到的服务添加到属性, 以便下次直接调用
             $this->$name = $service;
             return $service;

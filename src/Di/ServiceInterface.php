@@ -17,4 +17,11 @@ interface ServiceInterface
      * @return mixed
      */
     public function resolve(array $parameters = [], ContainerInterface $container = null);
+
+    /**
+     * 服务是否为共享的
+     *
+     * @return bool
+     */
+    public function isShared();
 }

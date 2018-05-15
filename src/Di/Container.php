@@ -25,21 +25,14 @@ class Container implements ContainerInterface, \ArrayAccess
      *
      * @var \Soli\Di\ServiceInterface[]
      */
-    protected static $services = [];
+    protected $services = [];
 
     /**
-     * The container's instances.
+     * 存储共享服务实例
      *
      * @var array
      */
-    protected $instances = [];
-
-    /**
-     * 存储 getShared 方法返回的服务实例（服务定义的执行结果）
-     *
-     * @var array
-     */
-    protected static $sharedInstances = [];
+    protected $sharedInstances = [];
 
     /**
      * 初始化容器默认实例
@@ -67,26 +60,13 @@ class Container implements ContainerInterface, \ArrayAccess
      *
      * @param string $id 服务标识
      * @param mixed $definition 服务定义
+     * @param bool $shared 是否为共享实例，默认为共享实例
      * @return \Soli\Di\ServiceInterface
      */
-    public function set($id, $definition)
+    public function set($id, $definition, $shared = true)
     {
-        $service = new Service($id, $definition, false);
-        static::$services[$id] = $service;
-        return $service;
-    }
-
-    /**
-     * 注册单例服务
-     *
-     * @param string $id 服务标识
-     * @param mixed $definition 服务定义
-     * @return \Soli\Di\ServiceInterface
-     */
-    public function setShared($id, $definition)
-    {
-        $service = new Service($id, $definition, true);
-        static::$services[$id] = $service;
+        $service = new Service($id, $definition, $shared);
+        $this->services[$id] = $service;
         return $service;
     }
 
@@ -101,12 +81,17 @@ class Container implements ContainerInterface, \ArrayAccess
      */
     public function get($id, array $parameters = [])
     {
-        if (isset(static::$services[$id])) {
+        // 如果是共享实例已解析，则返回
+        if (isset($this->sharedInstances[$id])) {
+            return $this->sharedInstances[$id];
+        }
+
+        if (isset($this->services[$id])) {
             /** @var \Soli\Di\ServiceInterface $service 服务实例 */
-            $service = static::$services[$id];
+            $service = $this->services[$id];
         } elseif (class_exists($id)) {
             // 自动将类名注册为服务
-            $service = $this->setShared($id, $id);
+            $service = $this->set($id, $id);
         } else {
             throw new \InvalidArgumentException("Service '$id' wasn't found in the dependency injection container");
         }
@@ -119,32 +104,12 @@ class Container implements ContainerInterface, \ArrayAccess
             $instance->setContainer($this);
         }
 
-        return $instance;
-    }
-
-    /**
-     * 获取单例服务
-     *
-     * 当一个服务未被注册为单例服务，使用此方法也可以获取单例服务
-     *
-     * @param string $id 服务标识
-     * @param array $parameters 参数
-     * @return mixed
-     */
-    public function getShared($id, array $parameters = [])
-    {
-        // 检查是否已解析
-        if (isset(static::$sharedInstances[$id])) {
-            return static::$sharedInstances[$id];
+        // 保存到共享实例列表
+        if ($service->isShared()) {
+            $this->sharedInstances[$id] = $instance;
         }
 
-        // 解析服务实例
-        $service = $this->get($id, $parameters);
-
-        // 保存到 shared 实例列表
-        static::$sharedInstances[$id] = $service;
-
-        return $service;
+        return $instance;
     }
 
     /**
@@ -155,7 +120,7 @@ class Container implements ContainerInterface, \ArrayAccess
      */
     public function has($id)
     {
-        return isset(static::$services[$id]);
+        return isset($this->services[$id]);
     }
 
     /**
@@ -166,8 +131,8 @@ class Container implements ContainerInterface, \ArrayAccess
      */
     public function remove($id)
     {
-        unset(static::$services[$id]);
-        unset(static::$sharedInstances[$id]);
+        unset($this->services[$id]);
+        unset($this->sharedInstances[$id]);
     }
 
     /**
@@ -177,8 +142,8 @@ class Container implements ContainerInterface, \ArrayAccess
      */
     public function clear()
     {
-        static::$services = [];
-        static::$sharedInstances = [];
+        $this->services = [];
+        $this->sharedInstances = [];
     }
 
     /**
@@ -190,8 +155,8 @@ class Container implements ContainerInterface, \ArrayAccess
      */
     public function getService($id)
     {
-        if (isset(static::$services[$id])) {
-            return static::$services[$id];
+        if (isset($this->services[$id])) {
+            return $this->services[$id];
         }
 
         throw new \InvalidArgumentException("Service '$id' wasn't found in the dependency injection container");
@@ -204,7 +169,7 @@ class Container implements ContainerInterface, \ArrayAccess
      */
     public function getServices()
     {
-        return static::$services;
+        return $this->services;
     }
 
     // 实现 \ArrayAccess 方法
@@ -216,12 +181,12 @@ class Container implements ContainerInterface, \ArrayAccess
 
     public function offsetGet($id)
     {
-        return $this->getShared($id);
+        return $this->get($id);
     }
 
     public function offsetSet($id, $definition)
     {
-        $this->setShared($id, $definition);
+        $this->set($id, $definition);
     }
 
     public function offsetUnset($id)
@@ -241,6 +206,6 @@ class Container implements ContainerInterface, \ArrayAccess
      */
     public function __get($id)
     {
-        return $this->getShared($id);
+        return $this->get($id);
     }
 }
