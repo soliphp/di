@@ -29,32 +29,3 @@ class MyComponent implements ContainerAwareInterface
         return $this->id;
     }
 }
-
-
-class A
-{
-    public $b;
-    public $c;
-    public $d;
-
-    public function __construct(B $b, C $c, $d = null)
-    {
-        $this->b = $b;
-        $this->c = $c;
-        $this->d = $d;
-    }
-}
-
-class B
-{
-    public function __construct()
-    {
-    }
-}
-
-class C
-{
-    public function __construct()
-    {
-    }
-}
