@@ -84,13 +84,13 @@ class Container implements ContainerInterface, \ArrayAccess
      *
      * 当传入未注册为服务标识的类名时，自动将类名注册为服务，并返回类实例
      *
-     * @param string $id 服务标识|类名
+     * @param string $id 服务标识|类名|别名
      * @param array $parameters 参数
      * @return mixed
      */
     public function get($id, array $parameters = [])
     {
-        $id = $this->getAlias($id);
+        $id = $this->getAliasId($id);
 
         // 如果是共享实例已解析，则返回
         if (isset($this->sharedInstances[$id])) {
@@ -124,28 +124,34 @@ class Container implements ContainerInterface, \ArrayAccess
     }
 
     /**
-     * 为服务添加别名
+     * 为某个服务定义别名，主要用于类型提示（接口）的自动注入
      *
-     * @param string $alias
-     * @param string $abstract
+     * @param string $alias 别名（接口名）
+     * @param string $id 服务标识|类名
      * @return void
      */
-    public function alias($alias, $abstract)
+    public function alias($alias, $id)
     {
-        $this->aliases[$abstract] = $alias;
+        $this->aliases[$alias] = $id;
     }
 
-    public function getAlias($abstract)
+    /**
+     * 获取某个别名对应的服务标识
+     *
+     * @param string $alias 别名
+     * @return string
+     */
+    public function getAliasId($alias)
     {
-        if (!isset($this->aliases[$abstract])) {
-            return $abstract;
+        if (!isset($this->aliases[$alias])) {
+            return $alias;
         }
 
-        if ($this->aliases[$abstract] === $abstract) {
-            throw new \LogicException("[{$abstract}] is aliased to itself.");
+        if ($this->aliases[$alias] === $alias) {
+            throw new \LogicException("[{$alias}] is aliased to itself.");
         }
 
-        return $this->getAlias($this->aliases[$abstract]);
+        return $this->getAliasId($this->aliases[$alias]);
     }
 
     /**

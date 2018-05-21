@@ -239,14 +239,14 @@ class ContainerTest extends TestCase
         ];
 
         $container = $this->container;
-        foreach ($aliases as $alias => $abstracts) {
-            foreach ($abstracts as $abstract) {
-                $container->alias($alias, $abstract);
+        foreach ($aliases as $key => $aliases) {
+            foreach ($aliases as $alias) {
+                $container->alias($alias, $key);
             }
         }
 
-        $containerAlias = $container->getAlias(\Psr\Container\ContainerInterface::class);
-        $oneAlias = $container->getAlias('three');
+        $containerAlias = $container->getAliasId(\Psr\Container\ContainerInterface::class);
+        $oneAlias = $container->getAliasId('three');
 
         $this->assertEquals('container', $containerAlias);
         $this->assertEquals('one', $oneAlias);
@@ -264,6 +264,6 @@ class ContainerTest extends TestCase
 
         $container->alias($selfAlias, $selfAlias);
 
-        $container->getAlias($selfAlias);
+        $container->getAliasId($selfAlias);
     }
 }
