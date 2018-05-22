@@ -6,6 +6,7 @@ namespace Soli\Di;
 
 use Closure;
 use ReflectionClass;
+use ReflectionParameter;
 
 /**
  * 服务原型
@@ -36,11 +37,18 @@ class Service implements ServiceInterface
     protected $shared = false;
 
     /**
-     * 存储共享服务实例（即服务定义的执行结果）
+     * 传入的参数
      *
-     * @var mixed
+     * @var array
      */
-    protected $sharedInstance;
+    protected $parameters;
+
+    /**
+     * 容器实例
+     *
+     * @var \Soli\Di\ContainerInterface;
+     */
+    protected $container;
 
     /**
      * Service constructor.
@@ -53,11 +61,11 @@ class Service implements ServiceInterface
     {
         $this->id = $id;
         $this->definition = $definition;
-        $this->shared = (bool)$shared;
+        $this->shared = $shared;
     }
 
     /**
-     * 检查服务是否为共享的
+     * 服务是否为共享的
      *
      * @return bool
      */
@@ -72,14 +80,12 @@ class Service implements ServiceInterface
      * @param array $parameters 参数
      * @param \Soli\Di\ContainerInterface $container 容器对象实例
      * @return mixed
-     * @throws \DomainException
+     * @throws \Exception
      */
-    public function resolve(array $parameters = null, ContainerInterface $container = null)
+    public function resolve(array $parameters = [], ContainerInterface $container = null)
     {
-        // 为 shared 服务且解析过则直接返回实例
-        if ($this->shared && $this->sharedInstance !== null) {
-            return $this->sharedInstance;
-        }
+        $this->parameters = $parameters;
+        $this->container = $container;
 
         // 创建实例
         $instance = null;
@@ -89,14 +95,12 @@ class Service implements ServiceInterface
         switch ($type) {
             case 'object':
                 if ($definition instanceof Closure) {
-                    // 绑定匿名函数到当前的容器对象实例上
-                    // 便于在匿名函数内通过 $this 访问容器中的其他服务
+                    // 匿名函数内使用 $this 访问容器中的其他服务
                     if (is_object($container)) {
                         $definition = $definition->bindTo($container);
                     }
 
-                    // Closure
-                    $instance = $this->createInstanceFromClosure($definition, $parameters);
+                    $instance = empty($parameters) ? $definition() : $definition(...$parameters);
                 } else {
                     // 对象实例
                     $instance = $definition;
@@ -104,61 +108,110 @@ class Service implements ServiceInterface
                 break;
             case 'string':
                 // 已存在的类名
-                $instance = $this->createInstanceFromClassName($definition, $parameters);
-                break;
-            case 'array':
-                // 数组，仅存储
-                $instance = $definition;
+                $instance = $this->buildClass();
                 break;
             default:
                 throw new \DomainException("Service '{$this->id}' cannot be resolved");
         }
 
-        // 如果是 shared, 保存实例
-        if ($this->shared) {
-            $this->sharedInstance = $instance;
-        }
-
         return $instance;
     }
 
     /**
-     * @param Closure $closure
-     * @param array   $parameters
-     * @return mixed
-     */
-    protected function createInstanceFromClosure(Closure $closure, array $parameters = null)
-    {
-        // Closure
-        if (is_array($parameters) && count($parameters)) {
-            $instance = call_user_func_array($closure, $parameters);
-        } else {
-            $instance = call_user_func($closure);
-        }
-
-        return $instance;
-    }
-
-    /**
-     * @param string $className
-     * @param array  $parameters
      * @return object
-     * @throws \DomainException
+     * @throws \Exception
      */
-    protected function createInstanceFromClassName($className, array $parameters = null)
+    protected function buildClass()
     {
+        $className = $this->definition;
+
         if (!class_exists($className)) {
             throw new \DomainException("Service '{$this->id}' cannot be resolved");
         }
 
         $reflector = new ReflectionClass($className);
 
-        if (is_array($parameters) && count($parameters)) {
-            $instance = $reflector->newInstanceArgs($parameters);
-        } else {
-            $instance = $reflector->newInstance();
+        if (!$reflector->isInstantiable()) {
+            throw new \DomainException("Can not instantiate {$reflector->name}");
         }
 
-        return $instance;
+        // ReflectionMethod
+        $constructor = $reflector->getConstructor();
+        if (is_null($constructor)) {
+            return $reflector->newInstance();
+        }
+
+        // ReflectionParameter[]
+        $dependencies = $constructor->getParameters();
+
+        $instances = $this->resolveDependencies(
+            $dependencies
+        );
+
+        return $reflector->newInstanceArgs($instances);
+    }
+
+    /**
+     * @param array $dependencies
+     * @return array
+     * @throws \Exception
+     */
+    protected function resolveDependencies(array $dependencies)
+    {
+        $parameters = $this->parameters;
+
+        $results = [];
+
+        foreach ($dependencies as $dependency) {
+            // 优先使用传入的参数值
+            if (array_key_exists($dependency->name, $parameters)) {
+                $results[] = $parameters[$dependency->name];
+                continue;
+            }
+
+            $results[] = is_null($dependency->getClass())
+                ? $this->resolvePrimitive($dependency)
+                : $this->resolveClass($dependency);
+        }
+
+        return $results;
+    }
+
+    /**
+     * @param \ReflectionParameter $parameter
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function resolvePrimitive(ReflectionParameter $parameter)
+    {
+        if ($parameter->isDefaultValueAvailable()) {
+            return $parameter->getDefaultValue();
+        }
+
+        $message = sprintf(
+            "Unresolvable dependency resolving [%s] in class %s",
+            $parameter,
+            $parameter->getDeclaringClass()->getName()
+        );
+
+        throw new \DomainException($message);
+    }
+
+    /**
+     * @param \ReflectionParameter $parameter
+     * @return mixed
+     * @throws \Exception
+     */
+    protected function resolveClass(ReflectionParameter $parameter)
+    {
+        try {
+            return $this->container->get($parameter->getClass()->name);
+        } catch (\Exception $e) {
+            if ($parameter->isOptional()) {
+                return $parameter->getDefaultValue();
+            }
+
+            throw $e;
+        }
     }
 }

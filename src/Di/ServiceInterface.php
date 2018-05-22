@@ -16,5 +16,12 @@ interface ServiceInterface
      * @param \Soli\Di\ContainerInterface $container 容器对象实例
      * @return mixed
      */
-    public function resolve(array $parameters = null, ContainerInterface $container = null);
+    public function resolve(array $parameters = [], ContainerInterface $container = null);
+
+    /**
+     * 服务是否为共享的
+     *
+     * @return bool
+     */
+    public function isShared();
 }

@@ -16,18 +16,10 @@ interface ContainerInterface extends PsrContainerInterface
      *
      * @param string $id 服务标识
      * @param mixed $definition 服务定义
+     * @param bool $shared
      * @return \Soli\Di\ServiceInterface
      */
-    public function set($id, $definition);
-
-    /**
-     * 注册单例服务
-     *
-     * @param string $id 服务标识
-     * @param mixed $definition 服务定义
-     * @return \Soli\Di\ServiceInterface
-     */
-    public function setShared($id, $definition);
+    public function set($id, $definition, $shared);
 
     /**
      * 从容器中获取一个服务
@@ -40,14 +32,13 @@ interface ContainerInterface extends PsrContainerInterface
     public function get($id);
 
     /**
-     * 获取单例服务
+     * 为服务添加别名
      *
-     * 当一个服务未被注册为单例服务，使用此方法也可以获取单例服务
-     *
-     * @param string $id 服务标识
-     * @return mixed
+     * @param string $alias
+     * @param string $abstract
+     * @return void
      */
-    public function getShared($id);
+    public function alias($alias, $abstract);
 
     /**
      * 查询容器中是否存在某个服务
@@ -71,19 +62,4 @@ interface ContainerInterface extends PsrContainerInterface
      * @return void
      */
     public function clear();
-
-    /**
-     * 获取容器中的某个 Service 对象实例
-     *
-     * @param string $id 服务标识
-     * @return \Soli\Di\ServiceInterface
-     */
-    public function getService($id);
-
-    /**
-     * 获取容器中的所有服务
-     *
-     * @return \Soli\Di\ServiceInterface[]
-     */
-    public function getServices();
 }

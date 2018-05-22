@@ -2,36 +2,16 @@
 
 namespace Soli\Tests\Di;
 
-use PHPUnit\Framework\TestCase;
+use Soli\Tests\TestCase;
 
 use Soli\Di\Service;
+use Soli\Tests\Data\Di\CanNotInstantiable;
+use Soli\Tests\Data\Di\NoConstructor;
+use Soli\Tests\Data\Di\UnresolvableDependency;
+use Soli\Tests\Data\Di\UnresolvableDependency2;
 
 class ServiceTest extends TestCase
 {
-    public function testNonShared()
-    {
-        $service = new Service('someName', function () {
-            return new \stdClass;
-        }, false);
-
-        $c1 = $service->resolve();
-        $c2 = $service->resolve();
-
-        $this->assertFalse($c1 === $c2);
-    }
-
-    public function testShared()
-    {
-        $service = new Service('someName', function () {
-            return new \stdClass;
-        }, true);
-
-        $c1 = $service->resolve();
-        $c2 = $service->resolve();
-
-        $this->assertTrue($c1 === $c2);
-    }
-
     public function testResolveObjectInstance()
     {
         $service = new Service('someName', new \stdClass);
@@ -41,21 +21,11 @@ class ServiceTest extends TestCase
         $this->assertInstanceOf('\stdClass', $a);
     }
 
-    public function testResolveArray()
-    {
-        $arr = [1, 2];
-        $service = new Service('someName', $arr);
-
-        $a = $service->resolve();
-
-        $this->assertEquals($arr, $a);
-    }
-
     public function testResolveClassWithParameters()
     {
         $service = new Service('someName', 'ReflectionFunction');
 
-        $parameters = ['substr'];
+        $parameters = ['name' => 'substr'];
         $a = $service->resolve($parameters);
 
         $this->assertEquals('substr', $a->name);
@@ -75,13 +45,16 @@ class ServiceTest extends TestCase
 
     public function testIsShared()
     {
-        $service = new Service('someName', function () {
+        $sharedService = new Service('sharedService', function () {
+            return new \stdClass;
+        }, true);
+
+        $nonSharedService = new Service('nonSharedService', function () {
             return new \stdClass;
         }, false);
 
-        $shared = $service->isShared();
-
-        $this->assertFalse($shared);
+        $this->assertTrue($sharedService->isShared());
+        $this->assertFalse($nonSharedService->isShared());
     }
 
     /**
@@ -99,10 +72,65 @@ class ServiceTest extends TestCase
      * @expectedException \Exception
      * @expectedExceptionMessageRegExp /Service '.+' cannot be resolved/
      */
-    public function testResolvedCannotCase()
+    public function testResolveCannotCase()
     {
         $service = new Service('cannotCase', null);
 
         $service->resolve();
+    }
+
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessageRegExp /Can not instantiate .+/
+     */
+    public function testResolveCannotInstantiate()
+    {
+        $service = new Service(CanNotInstantiable::class, CanNotInstantiable::class);
+
+        $service->resolve();
+    }
+
+    public function testResolveNewInstanceWithoutArgs()
+    {
+        $service = new Service(NoConstructor::class, NoConstructor::class);
+
+        $instance = $service->resolve();
+
+        $this->assertInstanceOf(NoConstructor::class, $instance);
+    }
+
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessageRegExp /Unresolvable dependency resolving .+/
+     */
+    public function testResolveUnresolvableDependencyPrimitive()
+    {
+        $service = new Service(UnresolvableDependency::class, UnresolvableDependency::class);
+
+        $service->resolve();
+    }
+
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessageRegExp /Unresolvable dependency resolving .+/
+     */
+    public function testResolveUnresolvableDependencyClass()
+    {
+        $service = new Service(UnresolvableDependency::class, UnresolvableDependency::class);
+
+        $parameters = ['default' => 'yes'];
+
+        $service->resolve($parameters, static::$container);
+    }
+
+    public function testResolveUnresolvableDependencyClass2OptionalParameter()
+    {
+        $service = new Service(UnresolvableDependency2::class, UnresolvableDependency2::class);
+
+        $parameters = ['default' => 'yes'];
+
+        $instance = $service->resolve($parameters, static::$container);
+
+        $this->assertInstanceOf(UnresolvableDependency2::class, $instance);
     }
 }
