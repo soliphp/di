@@ -28,6 +28,10 @@ Soli Dependency Injection Container
    * [类名](#类名-1)
    * [$this](#this)
 * [静态方式访问容器](#静态方式访问容器)
+* [容器感知](#容器感知)
+* [别名](#别名)
+   * [为已注册服务定义别名](#为已注册服务定义别名)
+   * [为类名定义别名](#为类名定义别名)
 * [示例](#示例)
 * [API 参考](#api-参考)
 * [测试](#测试)
@@ -186,6 +190,55 @@ Soli Dependency Injection Container
     $container->get('someService');
 
 这里需要注意一下，在调用 `Container::instance()` 之前，一定已经执行过 `new Container()` 实例化操作。
+
+## 容器感知
+
+如果某个服务实现了 `Soli\Di\ContainerAwareInterface` 容器感知接口，
+在获取服务时，会自动调用 `setContainer()` 为其设置容器实例。
+
+## 别名
+
+别名是用来给服务起不同的名字，以便可以使用不同的名字获取同一个服务。
+
+注意不要定义与服务名称相同的别名。
+
+### 为已注册服务定义别名
+
+首先注册以 `container` 为名称的服务：
+
+    $container->set('container', $container);
+
+为 `container` 服务定义三个别名 `Soli\Di\Container`, `Soli\Di\ContainerInterface`, `Psr\Container\ContainerInterface`：
+
+    $container->alias('Soli\Di\Container', 'container');
+    $container->alias('Soli\Di\ContainerInterface', 'container');
+    $container->alias('Psr\Container\ContainerInterface', 'container');
+
+如果容器中其他服务的构造函数使用了以上三个别名的类型提示，则会为其自动注入对应服务实例。
+
+    use Psr\Container\ContainerInterface;
+
+    class Component
+    {
+        protected $container;
+
+        public function __construct(ContainerInterface $container)
+        {
+            $this->container = $container;
+        }
+    }
+
+    // 将自动注入 $container 参数
+    $component = $container->get(Component::class);
+
+### 为类名定义别名
+
+由于类名可直接通过容器获取其实例，所以类名是无需定义的服务名称。
+
+那么我们便可以直接为类名定义别名：
+
+    $container->alias('Soli\Di\ContainerInterface', 'Soli\Di\Container');
+    $container->alias('Psr\Container\ContainerInterface', 'Soli\Di\Container');
 
 ## 示例
 
