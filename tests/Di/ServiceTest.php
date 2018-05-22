@@ -2,9 +2,8 @@
 
 namespace Soli\Tests\Di;
 
-use PHPUnit\Framework\TestCase;
+use Soli\Tests\TestCase;
 
-use Soli\Di\Container;
 use Soli\Di\Service;
 use Soli\Tests\Data\Di\CanNotInstantiable;
 use Soli\Tests\Data\Di\NoConstructor;
@@ -120,9 +119,8 @@ class ServiceTest extends TestCase
         $service = new Service(UnresolvableDependency::class, UnresolvableDependency::class);
 
         $parameters = ['default' => 'yes'];
-        $container = new Container();
 
-        $service->resolve($parameters, $container);
+        $service->resolve($parameters, static::$container);
     }
 
     public function testResolveUnresolvableDependencyClass2OptionalParameter()
@@ -130,9 +128,8 @@ class ServiceTest extends TestCase
         $service = new Service(UnresolvableDependency2::class, UnresolvableDependency2::class);
 
         $parameters = ['default' => 'yes'];
-        $container = new Container();
 
-        $instance = $service->resolve($parameters, $container);
+        $instance = $service->resolve($parameters, static::$container);
 
         $this->assertInstanceOf(UnresolvableDependency2::class, $instance);
     }

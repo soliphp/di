@@ -47,7 +47,7 @@ class Container implements ContainerInterface, \ArrayAccess
     public function __construct()
     {
         if (static::$instance === null) {
-            static::$instance = $this;
+            static::$instance = $this; // @codeCoverageIgnore
         }
         return static::$instance;
     }
