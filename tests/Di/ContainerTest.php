@@ -40,7 +40,10 @@ class ContainerTest extends TestCase
         $container->set('add', function ($a, $b) {
             return $a + $b;
         });
-        $closureWithParameters = $container->get('add', [1, 2]);
+        $closureWithParameters = $container->get('add', [
+            'a' => 1,
+            'b' => 2,
+        ]);
 
         $this->assertEquals(3, $closureWithParameters);
     }

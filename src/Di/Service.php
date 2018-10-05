@@ -6,6 +6,7 @@ namespace Soli\Di;
 
 use Closure;
 use ReflectionClass;
+use ReflectionFunction;
 use ReflectionParameter;
 
 /**
@@ -95,12 +96,7 @@ class Service implements ServiceInterface
         switch ($type) {
             case 'object':
                 if ($definition instanceof Closure) {
-                    // 匿名函数内使用 $this 访问容器中的其他服务
-                    if (is_object($container)) {
-                        $definition = $definition->bindTo($container);
-                    }
-
-                    $instance = empty($parameters) ? $definition() : $definition(...$parameters);
+                    $instance = $this->buildClosure();
                 } else {
                     // 对象实例
                     $instance = $definition;
@@ -115,6 +111,32 @@ class Service implements ServiceInterface
         }
 
         return $instance;
+    }
+
+    /**
+     * @return mixed
+     * @throws \ReflectionException
+     */
+    protected function buildClosure()
+    {
+        $container = $this->container;
+        $closure = $this->definition;
+
+        // 匿名函数内使用 $this 访问容器中的其他服务
+        if (is_object($container)) {
+            $closure = $closure->bindTo($container);
+        }
+
+        $reflector = new ReflectionFunction($closure);
+
+        // ReflectionParameter[]
+        $dependencies = $reflector->getParameters();
+
+        $instances = $this->resolveDependencies(
+            $dependencies
+        );
+
+        return $closure(...$instances);
     }
 
     /**

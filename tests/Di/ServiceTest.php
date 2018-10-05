@@ -37,7 +37,10 @@ class ServiceTest extends TestCase
             return $a + $b;
         });
 
-        $parameters = [1, 2];
+        $parameters = [
+            'a' => 1,
+            'b' => 2,
+        ];
         $sum = $service->resolve($parameters);
 
         $this->assertEquals(3, $sum);

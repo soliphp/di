@@ -22,10 +22,10 @@ Soli Dependency Injection Container
    * [注册接口到实现](#注册接口到实现)
    * [共享（单例）服务](#共享单例服务)
 * [获取服务](#获取服务)
-   * [get()](#get)
+   * [get() 服务ID](#get-服务id)
+   * [get() 类名](#get-类名)
    * [对象属性](#对象属性)
    * [数组下标](#数组下标)
-   * [类名](#类名-1)
    * [$this](#this)
 * [静态方式访问容器](#静态方式访问容器)
 * [容器感知](#容器感知)
@@ -153,11 +153,23 @@ Soli Dependency Injection Container
 
 获取服务有多种方法：
 
-### get()
+### get() 服务ID
 
-使用 `get()` 方法获取服务：
+服务ID或者叫服务名称，使用 `get()` 方法获取已注册`服务ID`提供的服务：
 
     $service = $container->get('someService');
+
+### get() 类名
+
+对于`类名`无论是否已注册为服务，都可以直接通过容器的 `get()` 方法获取到它的单例：
+
+    $service = $container->get('SomeNamespace\UnregisteredClass');
+
+这对于我们日常开发中经常用到的单例模式，将格外的方便。
+
+如果某些类的依赖项不能通过容器去解析，可以通过将它们作为关联数组传递到 `get()` 方法的第二个参数注入它们。
+
+    $service = $container->get('SomeNamespace\UnregisteredClass', ['id' => 1]);
 
 ### 对象属性
 
@@ -170,14 +182,6 @@ Soli Dependency Injection Container
 使用访问`数组下标`的方式，获取服务：
 
     $service = $container['someService'];
-
-### 类名
-
-对于`类名`无论是否已注册为服务，都可以直接通过容器获取到它的单例：
-
-    $service = $container->get('SomeNamespace\UnregisteredClass');
-
-这对于我们日常开发中经常用到的单例模式，将格外的方便。
 
 ### $this
 
@@ -214,7 +218,7 @@ Soli Dependency Injection Container
     $container->alias('Soli\Di\ContainerInterface', 'container');
     $container->alias('Psr\Container\ContainerInterface', 'container');
 
-如果容器中其他服务的构造函数使用了以上三个别名的类型提示，则会为其自动注入对应服务实例。
+如果容器中其他服务的构造函数使用了以上三个别名的「类型提示」，则会为其「自动注入」对应服务实例。
 
     use Psr\Container\ContainerInterface;
 
