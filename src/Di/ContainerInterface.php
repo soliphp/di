@@ -19,7 +19,7 @@ interface ContainerInterface extends PsrContainerInterface
      * @param bool $shared
      * @return \Soli\Di\ServiceInterface
      */
-    public function set($id, $definition, $shared);
+    public function set($id, $definition, $shared = true);
 
     /**
      * 从容器中获取一个服务

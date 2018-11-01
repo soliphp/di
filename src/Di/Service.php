@@ -58,7 +58,7 @@ class Service implements ServiceInterface
      * @param object|string|array $definition
      * @param bool $shared
      */
-    public function __construct($id, $definition, $shared = false)
+    public function __construct($id, $definition, $shared = true)
     {
         $this->id = $id;
         $this->definition = $definition;
@@ -115,7 +115,7 @@ class Service implements ServiceInterface
 
     /**
      * @return mixed
-     * @throws \ReflectionException
+     * @throws \Exception
      */
     protected function buildClosure()
     {
