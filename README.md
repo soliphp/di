@@ -270,6 +270,6 @@ MIT Public License
 
 [依赖注入与服务定位器]: https://docs.phalconphp.com/en/latest/di
 [服务容器]: https://laravel.com/docs/master/container
-[API 参考]: http://soli-api.aboutc.net/Soli/Di.html
+[API 参考]: http://api.soliphp.com/Soli/Di.html
 [examples]: examples
 [Laravel 框架的服务提供者]: https://laravel.com/docs/5.4/providers
