@@ -13,7 +13,7 @@ class MyComponent implements ContainerAwareInterface
 
     public $a;
 
-    public function __construct(A $a, $id = 0)
+    public function __construct(A $a, float $id = 0)
     {
         $this->a = $a;
 
@@ -24,7 +24,7 @@ class MyComponent implements ContainerAwareInterface
         }
     }
 
-    public function getId()
+    public function getId(): float
     {
         return $this->id;
     }
