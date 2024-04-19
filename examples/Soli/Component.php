@@ -2,6 +2,7 @@
 /**
  * @author ueaner <ueaner@gmail.com>
  */
+
 namespace Soli;
 
 use Soli\Di\Container;
@@ -22,7 +23,7 @@ class Component implements ContainerAwareInterface
      */
     protected $diContainer;
 
-    public function setContainer(ContainerInterface $diContainer)
+    public function setContainer(ContainerInterface $diContainer): void
     {
         $this->diContainer = $diContainer;
     }
@@ -30,7 +31,7 @@ class Component implements ContainerAwareInterface
     /**
      * @return \Soli\Di\ContainerInterface
      */
-    public function getContainer()
+    public function getContainer(): ContainerInterface
     {
         if ($this->diContainer === null) {
             $this->diContainer = Container::instance() ?: new Container();
@@ -44,7 +45,7 @@ class Component implements ContainerAwareInterface
      * @param string $name
      * @return \Soli\Di\ContainerInterface|mixed
      */
-    public function __get($name)
+    public function __get($name): mixed
     {
         $container = $this->getContainer();
 

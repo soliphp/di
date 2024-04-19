@@ -2,6 +2,7 @@
 /**
  * @author ueaner <ueaner@gmail.com>
  */
+
 namespace Soli\Di;
 
 /**
@@ -13,13 +14,14 @@ interface ContainerAwareInterface
      * 设置依赖注入容器
      *
      * @param \Soli\Di\ContainerInterface $container 容器对象实例
+     * @return void
      */
-    public function setContainer(ContainerInterface $container);
+    public function setContainer(ContainerInterface $container): void;
 
     /**
      * 获取依赖注入容器
      *
      * @return \Soli\Di\ContainerInterface
      */
-    public function getContainer();
+    public function getContainer(): ContainerInterface;
 }

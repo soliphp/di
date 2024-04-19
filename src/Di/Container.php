@@ -2,6 +2,7 @@
 /**
  * @author ueaner <ueaner@gmail.com>
  */
+
 namespace Soli\Di;
 
 /**
@@ -10,6 +11,8 @@ namespace Soli\Di;
  * 依赖注入容器的目的为了降低代码的耦合度，提高应用的可维护性。
  * 把组件之间的依赖，转换为对容器的依赖，通过容器
  * 进行服务管理(创建、配置和定位)。
+ *
+ * @implements ContainerInterface, \ArrayAccess<mixed, mixed>
  */
 class Container implements ContainerInterface, \ArrayAccess
 {
@@ -23,21 +26,21 @@ class Container implements ContainerInterface, \ArrayAccess
     /**
      * 存储所有注册的服务
      *
-     * @var \Soli\Di\ServiceInterface[]
+     * @var array<string, \Soli\Di\ServiceInterface>
      */
     protected $services = [];
 
     /**
      * 存储共享服务实例
      *
-     * @var array
+     * @var array<string, \Soli\Di\ServiceInterface>
      */
     protected $sharedInstances = [];
 
     /**
      * 别名列表
      *
-     * @var array
+     * @var array<string, string>
      */
     public $aliases = [];
 
@@ -46,7 +49,7 @@ class Container implements ContainerInterface, \ArrayAccess
      */
     public function __construct()
     {
-        if (static::$instance === null) {
+        if (is_null(static::$instance)) {
             static::$instance = $this; // @codeCoverageIgnore
         }
         return static::$instance;
@@ -57,8 +60,11 @@ class Container implements ContainerInterface, \ArrayAccess
      *
      * @return \Soli\Di\ContainerInterface
      */
-    public static function instance()
+    public static function instance(): ContainerInterface
     {
+        if (is_null(static::$instance)) {
+            static::$instance = new static(); // @codeCoverageIgnore
+        }
         return static::$instance;
     }
 
@@ -70,7 +76,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param bool $shared 是否为共享实例，默认为共享实例
      * @return \Soli\Di\ServiceInterface
      */
-    public function set($id, $definition, $shared = true)
+    public function set($id, $definition, $shared = true): ServiceInterface
     {
         unset($this->sharedInstances[$id], $this->aliases[$id]);
 
@@ -88,7 +94,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param array $parameters 参数
      * @return mixed
      */
-    public function get($id, array $parameters = [])
+    public function get($id, array $parameters = []): mixed
     {
         $id = $this->getAliasId($id);
 
@@ -130,7 +136,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param string $id 服务标识|类名
      * @return void
      */
-    public function alias($alias, $id)
+    public function alias($alias, $id): void
     {
         $this->aliases[$alias] = $id;
     }
@@ -141,7 +147,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param string $alias 别名
      * @return string
      */
-    public function getAliasId($alias)
+    public function getAliasId($alias): string
     {
         if (!isset($this->aliases[$alias])) {
             return $alias;
@@ -160,7 +166,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param string $id 服务标识
      * @return bool
      */
-    public function has($id)
+    public function has($id): bool
     {
         return isset($this->services[$id]) || isset($this->aliases[$id]);
     }
@@ -171,7 +177,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param string $id 服务标识
      * @return void
      */
-    public function remove($id)
+    public function remove($id): void
     {
         unset($this->services[$id]);
         unset($this->sharedInstances[$id]);
@@ -183,7 +189,7 @@ class Container implements ContainerInterface, \ArrayAccess
      *
      * @return void
      */
-    public function clear()
+    public function clear(): void
     {
         $this->services = [];
         $this->sharedInstances = [];
@@ -192,22 +198,22 @@ class Container implements ContainerInterface, \ArrayAccess
 
     // 实现 \ArrayAccess 方法
 
-    public function offsetExists($id)
+    public function offsetExists($id): bool
     {
         return $this->has($id);
     }
 
-    public function offsetGet($id)
+    public function offsetGet($id): mixed
     {
         return $this->get($id);
     }
 
-    public function offsetSet($id, $definition)
+    public function offsetSet($id, $definition): void
     {
         $this->set($id, $definition);
     }
 
-    public function offsetUnset($id)
+    public function offsetUnset($id): void
     {
         $this->remove($id);
     }
@@ -222,7 +228,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param string $id 服务标识
      * @return mixed
      */
-    public function __get($id)
+    public function __get($id): mixed
     {
         return $this->get($id);
     }

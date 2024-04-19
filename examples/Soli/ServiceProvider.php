@@ -31,7 +31,7 @@ abstract class ServiceProvider extends Component
     /**
      * 绑定服务到容器
      */
-    public function bind()
+    public function bind(): void
     {
         if (is_null($this->id)) {
             throw new \InvalidArgumentException('The "id" property must be set.');

@@ -1,37 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit backupGlobals="false"
-         backupStaticAttributes="false"
-         colors="true"
-         convertErrorsToExceptions="true"
-         convertNoticesToExceptions="true"
-         convertWarningsToExceptions="true"
-         processIsolation="false"
-         stopOnFailure="false"
-         verbose="true"
-         bootstrap="vendor/autoload.php"
->
-    <php>
-        <ini name="xdebug.show_exception_trace" value="0"/>
-        <ini name="error_reporting" value="-1"/>
-        <ini name="display_errors" value="1"/>
-    </php>
-
-    <testsuites>
-        <testsuite name="Soli Test Suite">
-            <directory suffix="Test.php">tests</directory>
-        </testsuite>
-    </testsuites>
-
-    <filter>
-        <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">src</directory>
-        </whitelist>
-    </filter>
-
-    <logging>
-        <log type="coverage-html" target="build/coverage" lowUpperBound="35" highLowerBound="70"/>
-        <log type="coverage-clover" target="build/logs/clover.xml"/>
-        <log type="coverage-crap4j" target="build/logs/crap4j.xml"/>
-        <log type="junit" target="build/logs/junit.xml"/>
-    </logging>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.0/phpunit.xsd"
+  backupGlobals="false"
+  backupStaticProperties="false"
+  colors="true"
+  processIsolation="false"
+  stopOnFailure="false"
+  bootstrap="vendor/autoload.php"
+  cacheDirectory=".phpunit.cache"
+  displayDetailsOnTestsThatTriggerDeprecations="true"
+  displayDetailsOnTestsThatTriggerErrors="true"
+  displayDetailsOnTestsThatTriggerNotices="true"
+  displayDetailsOnTestsThatTriggerWarnings="true"
+  >
+  <coverage>
+    <report>
+      <clover outputFile="build/logs/clover.xml"/>
+      <crap4j outputFile="build/logs/crap4j.xml"/>
+      <html outputDirectory="build/coverage" lowUpperBound="35" highLowerBound="70"/>
+    </report>
+  </coverage>
+  <php>
+    <ini name="xdebug.show_exception_trace" value="0"/>
+    <ini name="error_reporting" value="-1"/>
+    <ini name="display_errors" value="1"/>
+  </php>
+  <testsuites>
+    <testsuite name="Soli Test Suite">
+      <directory suffix="Test.php">tests</directory>
+    </testsuite>
+  </testsuites>
+  <logging>
+    <junit outputFile="build/logs/junit.xml"/>
+  </logging>
+  <source>
+    <include>
+      <directory suffix=".php">src</directory>
+    </include>
+  </source>
 </phpunit>

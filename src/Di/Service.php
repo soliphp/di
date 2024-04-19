@@ -2,6 +2,7 @@
 /**
  * @author ueaner <ueaner@gmail.com>
  */
+
 namespace Soli\Di;
 
 use Closure;
@@ -70,7 +71,7 @@ class Service implements ServiceInterface
      *
      * @return bool
      */
-    public function isShared()
+    public function isShared(): bool
     {
         return $this->shared;
     }
@@ -83,7 +84,7 @@ class Service implements ServiceInterface
      * @return mixed
      * @throws \Exception
      */
-    public function resolve(array $parameters = [], ContainerInterface $container = null)
+    public function resolve(array $parameters = [], ContainerInterface $container = null): mixed
     {
         $this->parameters = $parameters;
         $this->container = $container;
@@ -143,7 +144,7 @@ class Service implements ServiceInterface
      * @return object
      * @throws \Exception
      */
-    protected function buildClass()
+    protected function buildClass(): ?object
     {
         $className = $this->definition;
 
@@ -178,7 +179,7 @@ class Service implements ServiceInterface
      * @return array
      * @throws \Exception
      */
-    protected function resolveDependencies(array $dependencies)
+    protected function resolveDependencies(array $dependencies): array
     {
         $parameters = $this->parameters;
 
@@ -186,17 +187,49 @@ class Service implements ServiceInterface
 
         foreach ($dependencies as $dependency) {
             // 优先使用传入的参数值
-            if (array_key_exists($dependency->name, $parameters)) {
+            if (isset($parameters[$dependency->name])) {
                 $results[] = $parameters[$dependency->name];
                 continue;
             }
 
-            $results[] = is_null($dependency->getClass())
+            $results[] = is_null($this->getParameterClassName($dependency))
                 ? $this->resolvePrimitive($dependency)
                 : $this->resolveClass($dependency);
         }
 
         return $results;
+    }
+
+    /**
+     * Get the class name of the given parameter's type, if possible.
+     * from https://github.com/illuminate/container/blob/d3295a124cd01e901bd734eb0e26fc2b03083f83/Util.php#L51
+     *
+     * From Reflector::getParameterClassName() in Illuminate\Support.
+     *
+     * @param  \ReflectionParameter  $parameter
+     * @return string|null
+     */
+    protected function getParameterClassName($parameter): string|null
+    {
+        $type = $parameter->getType();
+
+        if (! $type instanceof \ReflectionNamedType || $type->isBuiltin()) {
+            return null;
+        }
+
+        $name = $type->getName();
+
+        if (! is_null($class = $parameter->getDeclaringClass())) {
+            if ($name === 'self') {
+                return $class->getName();
+            }
+
+            if ($name === 'parent' && $parent = $class->getParentClass()) {
+                return $parent->getName();
+            }
+        }
+
+        return $name;
     }
 
     /**
@@ -206,7 +239,7 @@ class Service implements ServiceInterface
      */
     protected function resolvePrimitive(ReflectionParameter $parameter)
     {
-        if ($parameter->isDefaultValueAvailable()) {
+        if ($parameter->isDefaultValueAvailable()) { // false
             return $parameter->getDefaultValue();
         }
 
@@ -227,7 +260,7 @@ class Service implements ServiceInterface
     protected function resolveClass(ReflectionParameter $parameter)
     {
         try {
-            return $this->container->get($parameter->getClass()->name);
+            return $this->container->get(strval($parameter->getType()));
         } catch (\Exception $e) {
             if ($parameter->isOptional()) {
                 return $parameter->getDefaultValue();

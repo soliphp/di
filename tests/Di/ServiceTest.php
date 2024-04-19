@@ -12,26 +12,26 @@ use Soli\Tests\Data\Di\UnresolvableDependency2;
 
 class ServiceTest extends TestCase
 {
-    public function testResolveObjectInstance()
+    public function testResolveObjectInstance(): void
     {
-        $service = new Service('someName', new \stdClass);
+        $service = new Service('someName', new \stdClass());
 
         $a = $service->resolve();
 
         $this->assertInstanceOf('\stdClass', $a);
     }
 
-    public function testResolveClassWithParameters()
+    public function testResolveClassWithParameters(): void
     {
         $service = new Service('someName', 'ReflectionFunction');
 
-        $parameters = ['name' => 'substr'];
+        $parameters = ['function' => 'substr'];
         $a = $service->resolve($parameters);
 
         $this->assertEquals('substr', $a->name);
     }
 
-    public function testResolveClosureWithParameters()
+    public function testResolveClosureWithParameters(): void
     {
         $service = new Service('someName', function ($a, $b) {
             return $a + $b;
@@ -46,14 +46,14 @@ class ServiceTest extends TestCase
         $this->assertEquals(3, $sum);
     }
 
-    public function testIsShared()
+    public function testIsShared(): void
     {
         $sharedService = new Service('sharedService', function () {
-            return new \stdClass;
+            return new \stdClass();
         }, true);
 
         $nonSharedService = new Service('nonSharedService', function () {
-            return new \stdClass;
+            return new \stdClass();
         }, false);
 
         $this->assertTrue($sharedService->isShared());
@@ -64,8 +64,11 @@ class ServiceTest extends TestCase
      * @expectedException \Exception
      * @expectedExceptionMessageRegExp /Service '.+' cannot be resolved/
      */
-    public function testCannotResolved()
+    public function testCannotResolved(): void
     {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessageMatches("/Service '.+' cannot be resolved/");
+
         $service = new Service('notExistsClass', 'not_exists_class_name');
 
         $service->resolve();
@@ -75,8 +78,11 @@ class ServiceTest extends TestCase
      * @expectedException \Exception
      * @expectedExceptionMessageRegExp /Service '.+' cannot be resolved/
      */
-    public function testResolveCannotCase()
+    public function testResolveCannotCase(): void
     {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessageMatches("/Service '.+' cannot be resolved/");
+
         $service = new Service('cannotCase', null);
 
         $service->resolve();
@@ -86,14 +92,17 @@ class ServiceTest extends TestCase
      * @expectedException \Exception
      * @expectedExceptionMessageRegExp /Can not instantiate .+/
      */
-    public function testResolveCannotInstantiate()
+    public function testResolveCannotInstantiate(): void
     {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessageMatches("/Can not instantiate .+/");
+
         $service = new Service(CanNotInstantiable::class, CanNotInstantiable::class);
 
         $service->resolve();
     }
 
-    public function testResolveNewInstanceWithoutArgs()
+    public function testResolveNewInstanceWithoutArgs(): void
     {
         $service = new Service(NoConstructor::class, NoConstructor::class);
 
@@ -106,8 +115,11 @@ class ServiceTest extends TestCase
      * @expectedException \Exception
      * @expectedExceptionMessageRegExp /Unresolvable dependency resolving .+/
      */
-    public function testResolveUnresolvableDependencyPrimitive()
+    public function testResolveUnresolvableDependencyPrimitive(): void
     {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessageMatches("/Unresolvable dependency resolving .+/");
+
         $service = new Service(UnresolvableDependency::class, UnresolvableDependency::class);
 
         $service->resolve();
@@ -117,8 +129,11 @@ class ServiceTest extends TestCase
      * @expectedException \Exception
      * @expectedExceptionMessageRegExp /Unresolvable dependency resolving .+/
      */
-    public function testResolveUnresolvableDependencyClass()
+    public function testResolveUnresolvableDependencyClass(): void
     {
+        $this->expectException(\DomainException::class);
+        $this->expectExceptionMessageMatches("/Unresolvable dependency resolving .+/");
+
         $service = new Service(UnresolvableDependency::class, UnresolvableDependency::class);
 
         $parameters = ['default' => 'yes'];
@@ -126,7 +141,7 @@ class ServiceTest extends TestCase
         $service->resolve($parameters, static::$container);
     }
 
-    public function testResolveUnresolvableDependencyClass2OptionalParameter()
+    public function testResolveUnresolvableDependencyClass2OptionalParameter(): void
     {
         $service = new Service(UnresolvableDependency2::class, UnresolvableDependency2::class);
 

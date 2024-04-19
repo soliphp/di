@@ -2,6 +2,7 @@
 /**
  * @author ueaner <ueaner@gmail.com>
  */
+
 namespace Soli\Di;
 
 /**
@@ -18,8 +19,9 @@ trait ContainerAwareTrait
      * 设置依赖注入容器
      *
      * @param \Soli\Di\ContainerInterface $container 容器对象实例
+     * @return void
      */
-    public function setContainer(ContainerInterface $container)
+    public function setContainer(ContainerInterface $container): void
     {
         $this->container = $container;
     }
@@ -29,7 +31,7 @@ trait ContainerAwareTrait
      *
      * @return \Soli\Di\ContainerInterface
      */
-    public function getContainer()
+    public function getContainer(): ContainerInterface
     {
         return $this->container;
     }

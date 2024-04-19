@@ -14,16 +14,16 @@ class ExampleApp extends Component
         // registerCoreContainerAliases();
     }
 
-    public function registerBaseServiceProviders()
+    public function registerBaseServiceProviders(): void
     {
-        (new ConfigServiceProvider)->bind();
+        (new ConfigServiceProvider())->bind();
     }
 
-    public function registerConfiguredProviders()
+    public function registerConfiguredProviders(): void
     {
         $providers = $this->config['providers'];
         foreach ($providers as $provide) {
-            (new $provide)->bind();
+            (new $provide())->bind();
         }
     }
 }

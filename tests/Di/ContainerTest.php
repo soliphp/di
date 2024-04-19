@@ -16,12 +16,12 @@ use stdClass;
 
 class ContainerTest extends TestCase
 {
-    public function testContainerInstance()
+    public function testContainerInstance(): void
     {
         $this->assertInstanceOf(ContainerInterface::class, Container::instance());
     }
 
-    public function testClosureInjection()
+    public function testClosureInjection(): void
     {
         $container = static::$container;
 
@@ -33,7 +33,7 @@ class ContainerTest extends TestCase
         $this->assertEquals('closure instance', $service);
     }
 
-    public function testClosureWithParametersInjection()
+    public function testClosureWithParametersInjection(): void
     {
         $container = static::$container;
 
@@ -48,7 +48,7 @@ class ContainerTest extends TestCase
         $this->assertEquals(3, $closureWithParameters);
     }
 
-    public function testClassTypeHintAutoInjection()
+    public function testClassTypeHintAutoInjection(): void
     {
         $container = static::$container;
 
@@ -65,7 +65,7 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(C::class, $service->a->c);
     }
 
-    public function testClassWithParametersInjection()
+    public function testClassWithParametersInjection(): void
     {
         $container = static::$container;
 
@@ -78,7 +78,7 @@ class ContainerTest extends TestCase
         $this->assertEquals(100, $service->getId());
     }
 
-    public function testInstanceInjection()
+    public function testInstanceInjection(): void
     {
         $container = static::$container;
 
@@ -88,7 +88,7 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(stdClass::class, $service);
     }
 
-    public function testSetShared()
+    public function testSetShared(): void
     {
         $container = static::$container;
 
@@ -107,7 +107,7 @@ class ContainerTest extends TestCase
         $this->assertTrue($trueId12);
     }
 
-    public function testArrayAccess()
+    public function testArrayAccess(): void
     {
         $container = static::$container;
 
@@ -129,7 +129,7 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf('ArrayObject', $service2);
     }
 
-    public function testMagicGet()
+    public function testMagicGet(): void
     {
         /** @var \Soli\Di\Container $container */
         $container = static::$container;
@@ -144,7 +144,7 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf('ArrayObject', $service2);
     }
 
-    public function testClear()
+    public function testClear(): void
     {
         $container = static::$container;
 
@@ -159,14 +159,14 @@ class ContainerTest extends TestCase
         $this->assertFalse($has);
     }
 
-    public function testGetClassName()
+    public function testGetClassName(): void
     {
         $service = static::$container->get(MyComponent::class);
 
         $this->assertInstanceOf(MyComponent::class, $service);
     }
 
-    public function testInterfaceVsClass()
+    public function testInterfaceVsClass(): void
     {
         $container = static::$container;
 
@@ -176,7 +176,7 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(ContainerInterface::class, $container);
     }
 
-    public function testContainerAware()
+    public function testContainerAware(): void
     {
         $container = static::$container;
 
@@ -189,7 +189,7 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(ContainerInterface::class, $service->getContainer());
     }
 
-    public function testClosureInjectionUseThis()
+    public function testClosureInjectionUseThis(): void
     {
         $container = static::$container;
 
@@ -201,7 +201,7 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(ContainerInterface::class, $service);
     }
 
-    public function testClosureInjectionUseThisCallOtherService()
+    public function testClosureInjectionUseThisCallOtherService(): void
     {
         $container = static::$container;
 
@@ -225,19 +225,22 @@ class ContainerTest extends TestCase
     }
 
     /**
-     * @expectedException \Exception
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessageRegExp /Service '.+' wasn't found in the dependency injection container/
      */
-    public function testCannotResolved()
+    public function testCannotResolved(): void
     {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageMatches("/Service '.+' wasn't found in the dependency injection container/");
+
         static::$container->get('notExistsService');
     }
 
-    public function testAlias()
+    public function testAlias(): void
     {
         $aliases = [
-            'app' => [
-                \Soli\Application::class,
+            'service' => [
+                \Soli\Di\Service::class,
             ],
             'container' => [
                 \Soli\Di\Container::class,
@@ -269,8 +272,11 @@ class ContainerTest extends TestCase
      * @expectedException \Exception
      * @expectedExceptionMessageRegExp /.+ is aliased to itself./
      */
-    public function testAliasedItselfException()
+    public function testAliasedItselfException(): void
     {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessageMatches("/.+ is aliased to itself./");
+
         $selfAlias = 'self_alias';
 
         $container = static::$container;

@@ -2,6 +2,7 @@
 /**
  * @author: ueaner <ueaner@gmail.com>
  */
+
 namespace Soli\Di;
 
 /**
@@ -16,12 +17,12 @@ interface ServiceInterface
      * @param \Soli\Di\ContainerInterface $container 容器对象实例
      * @return mixed
      */
-    public function resolve(array $parameters = [], ContainerInterface $container = null);
+    public function resolve(array $parameters = [], ContainerInterface $container = null): mixed;
 
     /**
      * 服务是否为共享的
      *
      * @return bool
      */
-    public function isShared();
+    public function isShared(): bool;
 }

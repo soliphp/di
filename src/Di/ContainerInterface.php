@@ -2,6 +2,7 @@
 /**
  * @author: ueaner <ueaner@gmail.com>
  */
+
 namespace Soli\Di;
 
 use Psr\Container\ContainerInterface as PsrContainerInterface;
@@ -19,7 +20,7 @@ interface ContainerInterface extends PsrContainerInterface
      * @param bool $shared
      * @return \Soli\Di\ServiceInterface
      */
-    public function set($id, $definition, $shared = true);
+    public function set($id, $definition, $shared = true): ServiceInterface;
 
     /**
      * 从容器中获取一个服务
@@ -29,7 +30,7 @@ interface ContainerInterface extends PsrContainerInterface
      * @param string $id 服务标识|类名
      * @return mixed
      */
-    public function get($id);
+    public function get($id): mixed;
 
     /**
      * 为服务添加别名
@@ -38,7 +39,7 @@ interface ContainerInterface extends PsrContainerInterface
      * @param string $abstract
      * @return void
      */
-    public function alias($alias, $abstract);
+    public function alias($alias, $abstract): void;
 
     /**
      * 查询容器中是否存在某个服务
@@ -46,7 +47,7 @@ interface ContainerInterface extends PsrContainerInterface
      * @param string $id 服务标识
      * @return bool
      */
-    public function has($id);
+    public function has($id): bool;
 
     /**
      * 从服务容器中删除一个服务
@@ -54,12 +55,12 @@ interface ContainerInterface extends PsrContainerInterface
      * @param string $id 服务标识
      * @return void
      */
-    public function remove($id);
+    public function remove($id): void;
 
     /**
      * 清空容器
      *
      * @return void
      */
-    public function clear();
+    public function clear(): void;
 }

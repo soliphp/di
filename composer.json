@@ -2,7 +2,12 @@
     "name": "soliphp/di",
     "description": "Soli Dependency Injection Container",
     "type": "library",
-    "keywords": ["di", "container", "DependencyInjection", "soliphp"],
+    "keywords": [
+        "di",
+        "container",
+        "DependencyInjection",
+        "soliphp"
+    ],
     "homepage": "https://github.com/soliphp/di",
     "support": {
         "issues": "https://github.com/soliphp/di/issues",
@@ -16,7 +21,7 @@
         }
     ],
     "require": {
-        "php": ">=5.6.0",
+        "php": "^8.2",
         "psr/container": "^1.0"
     },
     "provide": {
@@ -31,5 +36,8 @@
         "psr-4": {
             "Soli\\Tests\\": "tests/"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0"
     }
 }
