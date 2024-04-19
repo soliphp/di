@@ -80,8 +80,8 @@ class ServiceTest extends TestCase
      */
     public function testResolveCannotCase(): void
     {
-        $this->expectException(\DomainException::class);
-        $this->expectExceptionMessageMatches("/Service '.+' cannot be resolved/");
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessageMatches("/must be of type .+, null given/");
 
         $service = new Service('cannotCase', null);
 

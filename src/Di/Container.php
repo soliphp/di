@@ -76,7 +76,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param bool $shared 是否为共享实例，默认为共享实例
      * @return \Soli\Di\ServiceInterface
      */
-    public function set($id, $definition, $shared = true): ServiceInterface
+    public function set(string $id, mixed $definition, bool $shared = true): ServiceInterface
     {
         unset($this->sharedInstances[$id], $this->aliases[$id]);
 
@@ -94,7 +94,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param array $parameters 参数
      * @return mixed
      */
-    public function get($id, array $parameters = []): mixed
+    public function get(string $id, array $parameters = []): mixed
     {
         $id = $this->getAliasId($id);
 
@@ -136,7 +136,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param string $id 服务标识|类名
      * @return void
      */
-    public function alias($alias, $id): void
+    public function alias(string $alias, string $id): void
     {
         $this->aliases[$alias] = $id;
     }
@@ -147,7 +147,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param string $alias 别名
      * @return string
      */
-    public function getAliasId($alias): string
+    public function getAliasId(string $alias): string
     {
         if (!isset($this->aliases[$alias])) {
             return $alias;
@@ -166,7 +166,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param string $id 服务标识
      * @return bool
      */
-    public function has($id): bool
+    public function has(string $id): bool
     {
         return isset($this->services[$id]) || isset($this->aliases[$id]);
     }
@@ -177,7 +177,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param string $id 服务标识
      * @return void
      */
-    public function remove($id): void
+    public function remove(string $id): void
     {
         unset($this->services[$id]);
         unset($this->sharedInstances[$id]);
@@ -228,7 +228,7 @@ class Container implements ContainerInterface, \ArrayAccess
      * @param string $id 服务标识
      * @return mixed
      */
-    public function __get($id): mixed
+    public function __get(string $id): mixed
     {
         return $this->get($id);
     }

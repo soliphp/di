@@ -25,9 +25,9 @@ class Service implements ServiceInterface
     protected $id;
 
     /**
-     * 服务定义, Closure|对象实例|类名|数组
+     * 服务定义, 对象实例(包括Closure)|类名
      *
-     * @var \Closure|object|string|array
+     * @var object|string
      */
     protected $definition;
 
@@ -56,10 +56,10 @@ class Service implements ServiceInterface
      * Service constructor.
      *
      * @param string $id 服务标识
-     * @param object|string|array $definition
+     * @param object|string $definition
      * @param bool $shared
      */
-    public function __construct($id, $definition, $shared = true)
+    public function __construct(string $id, object|string $definition, bool $shared = true)
     {
         $this->id = $id;
         $this->definition = $definition;
@@ -118,7 +118,7 @@ class Service implements ServiceInterface
      * @return mixed
      * @throws \Exception
      */
-    protected function buildClosure()
+    protected function buildClosure(): mixed
     {
         $container = $this->container;
         $closure = $this->definition;
@@ -175,7 +175,7 @@ class Service implements ServiceInterface
     }
 
     /**
-     * @param array $dependencies
+     * @param ReflectionParameter[] $dependencies
      * @return array
      * @throws \Exception
      */
@@ -209,7 +209,7 @@ class Service implements ServiceInterface
      * @param  \ReflectionParameter  $parameter
      * @return string|null
      */
-    protected function getParameterClassName($parameter): string|null
+    protected function getParameterClassName(ReflectionParameter $parameter): ?string
     {
         $type = $parameter->getType();
 
@@ -237,7 +237,7 @@ class Service implements ServiceInterface
      * @return mixed
      * @throws \Exception
      */
-    protected function resolvePrimitive(ReflectionParameter $parameter)
+    protected function resolvePrimitive(ReflectionParameter $parameter): mixed
     {
         if ($parameter->isDefaultValueAvailable()) { // false
             return $parameter->getDefaultValue();
@@ -257,7 +257,7 @@ class Service implements ServiceInterface
      * @return mixed
      * @throws \Exception
      */
-    protected function resolveClass(ReflectionParameter $parameter)
+    protected function resolveClass(ReflectionParameter $parameter): mixed
     {
         try {
             return $this->container->get(strval($parameter->getType()));
