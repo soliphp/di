@@ -22,7 +22,7 @@
     ],
     "require": {
         "php": "^8.2",
-        "psr/container": "^1.0"
+        "psr/container": "^2.0"
     },
     "provide": {
         "psr/container-implementation": "^1.0"
