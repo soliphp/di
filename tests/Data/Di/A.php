@@ -8,7 +8,7 @@ class A
     public $c;
     public $d;
 
-    public function __construct(B $b, C $c, D $d = null)
+    public function __construct(B $b, C $c, ?D $d = null)
     {
         $this->b = $b;
         $this->c = $c;

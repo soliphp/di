@@ -84,7 +84,7 @@ class Service implements ServiceInterface
      * @return mixed
      * @throws \Exception
      */
-    public function resolve(array $parameters = [], ContainerInterface $container = null): mixed
+    public function resolve(array $parameters = [], ?ContainerInterface $container = null): mixed
     {
         $this->parameters = $parameters;
         $this->container = $container;
